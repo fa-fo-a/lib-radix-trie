@@ -42,15 +42,12 @@ class Node
     public function getMatchingEdge(string $query): ?Edge
     {
         foreach ($this->edges as $edge) {
-            if (
-                strpos(
-                    $edge
-                        ->getTargetNode()
-                        ->getLabel()
-                    ,
-                    $query
-                ) !== false
-            ) {
+            if (str_starts_with(
+                $query,
+                $edge
+                    ->getTargetNode()
+                    ->getLabel()
+            )) {
                 return $edge;
             }
         }
