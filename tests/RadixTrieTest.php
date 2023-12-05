@@ -7,81 +7,202 @@ namespace achertovsky\RadixTrie\Tests;
 use PHPUnit\Framework\TestCase;
 use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\RadixTrie;
+use achertovsky\RadixTrie\Entity\Edge;
 
+/** @todo add test that find with empty string will return none */
 class RadixTrieTest extends TestCase
 {
-    private RadixTrie $trie;
-
-    protected function setUp(): void
+    public function testSearchWorksGood(): void
     {
-        $rootNode = new Node('');
-
-        $testerNode = new Node('tester');
-        $testerEdge = new Edge('er', $testerNode);
-        $testEmptyNode = new Node('test');
-        $testEmptyEdge = new Edge('', $testEmptyNode);
-        $testNode = new Node('test');
-        $testEdge = new Edge('test', $testNode);
-        $testNode->addEdge($testEmptyEdge);
-        $testNode->addEdge($testerEdge);
-
-        $rootNode->addEdge($testEdge);
-
-        // @todo: make search
         // '' => (test) => test => (er) => tester
         //                      => () => test
-        $this->trie = new RadixTrie(
+        $rootNode = new Node('');
+        $trie = new RadixTrie(
             $rootNode
         );
-    }
+        $testLeaf = new Node('test');
+        $testLeafsEdge = new Edge('', $testLeaf);
+        $testerLeaf = new Node('tester');
+        $testerLeafsEdge = new Edge('er', $testerLeaf);
+        $testNode = new Node('test');
+        $testEdge = new Edge('test', $testNode);
+        $testNode->addEdge($testLeafsEdge);
+        $testNode->addEdge($testerLeafsEdge);
+        $rootNode->addEdge($testEdge);
 
-    public function test(): void
-    {
-        $this->trie->insert('test');
-        // $this->trie->insert('tester');
-        $this->trie->insert('toaster');
-//        $this->trie->insert('toasting');
-//        $this->trie->insert('slow');
-//        $this->trie->insert('slowly');
-
-        $this->assertEquals(
+        $this->assertArraysHaveEqualDataset(
             [
                 'test',
                 'tester',
             ],
-            $this->trie->find('test')
+            $trie->find('t'),
+            'finds value for just t, so all leafs'
         );
 
-//        $this->assertEquals(
-//            [
-//                'test',
-//                'toaster',
-//                'toasting',
-//            ],
-//            $this->trie->find('t')
-//        );
+        $this->assertArraysHaveEqualDataset(
+            [
+                'test',
+                'tester',
+            ],
+            $trie->find('test'),
+            'finds leafs by test query'
+        );
 
-//        $this->assertEquals(
-//            [
-//                'slow',
-//                'slowly',
-//            ],
-//            $this->trie->find('s')
-//        );
-//
-//        $this->assertEquals(
-//            [
-//                'toaster',
-//                'toasting',
-//            ],
-//            $this->trie->find('to')
-//        );
-//
-//        $this->assertEquals(
-//            [
-//                'toaster',
-//            ],
-//            $this->trie->find('toaster')
-//        );
+        $this->assertArraysHaveEqualDataset(
+            [
+                'tester',
+            ],
+            $trie->find('tester'),
+            'finds single leaf by tester query'
+        );
+    }
+
+    private function assertArraysHaveEqualDataset(
+        array $expectedArray,
+        array $actualArray,
+        string $explanation = ''
+    ): void {
+        asort($expectedArray);
+        asort($actualArray);
+
+        $this->assertEquals(
+            $expectedArray,
+            $actualArray,
+            $explanation
+        );
+    }
+
+    public function testSingleValueInsertWouldInsert(): void
+    {
+        $trie = new RadixTrie(
+            new Node('')
+        );
+
+        $trie->insert('test');
+        $this->assertArraysHaveEqualDataset(
+            [
+                'test',
+            ],
+            $trie->find('t'),
+            'finds value added'
+        );
+
+        $trie->insert('test');
+        $this->assertArraysHaveEqualDataset(
+            [
+                'test',
+            ],
+            $trie->find('t'),
+            'adding same word ruined nothing'
+        );
+    }
+
+    public function testBuildTrieWithSameWordRoot(): void
+    {
+        $trie = new RadixTrie(
+            new Node('')
+        );
+
+        $trie->insert('test');
+        $trie->insert('tester');
+        $this->assertArraysHaveEqualDataset(
+            [
+                'test',
+                'tester',
+            ],
+            $trie->find('t'),
+            'finds all leafs'
+        );
+
+        $trie->insert('testing');
+        $this->assertArraysHaveEqualDataset(
+            [
+                'test',
+                'tester',
+                'testing',
+            ],
+            $trie->find('t'),
+            'finds all leafs'
+        );
+    }
+
+    public function testSameWordRootButLongerWordWontBeFound(): void
+    {
+        $trie = new RadixTrie(
+            new Node('')
+        );
+
+        $trie->insert('test');
+        $trie->insert('tester');
+        $this->assertArraysHaveEqualDataset(
+            [],
+            $trie->find('testing'),
+        );
+    }
+
+    public function testShouldReturnWordsWithOnlyRelevantPrefixes(): void
+    {
+        $trie = new RadixTrie(
+            new Node('')
+        );
+
+        $trie->insert('tool');
+        $trie->insert('rat');
+
+        $this->assertArraysHaveEqualDataset(
+            [
+                'tool',
+            ],
+            $trie->find('t'),
+            'finds only t starting'
+        );
+    }
+
+    public function testBuildTrieWithSamePrefixes(): void
+    {
+        $trie = new RadixTrie(
+            new Node('')
+        );
+
+        $trie->insert('tester');
+        $trie->insert('test');
+        $trie->insert('tool');
+        $trie->insert('to');
+
+        $this->assertArraysHaveEqualDataset(
+            [
+                'test',
+                'tester',
+                'tool',
+                'to',
+            ],
+            $trie->find('t'),
+            'finds all leafs'
+        );
+
+        $this->assertArraysHaveEqualDataset(
+            [
+                'test',
+                'tester',
+            ],
+            $trie->find('test'),
+            'finds all test leafs'
+        );
+
+        $this->assertArraysHaveEqualDataset(
+            [
+                'tool',
+            ],
+            $trie->find('tool'),
+            'finds tool leaf'
+        );
+        $this->assertArraysHaveEqualDataset(
+            [
+                'to',
+                'tool',
+            ],
+            $trie->find('to'),
+            'finds tool leaf'
+        );
     }
 }

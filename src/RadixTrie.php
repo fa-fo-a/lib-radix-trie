@@ -9,87 +9,217 @@ use achertovsky\RadixTrie\Entity\Node;
 
 class RadixTrie
 {
+    private StringHelper $stringHelper;
+
     public function __construct(
         private Node $rootNode = new Node('')
     ) {
+        $this->stringHelper = new StringHelper();
     }
 
     /**
      * @return string[]
      */
-    // public function find(string $query): array
-    // {
-    //     $output = [];
-    //     $lookupNode = $this->lookup($query);
-    //     if ($lookupNode === null) {
-    //         return $output;
-    //     }
-    //     return $this->getLeafValues($lookupNode);
-    // }
+    public function find(string $query): array
+    {
+        $output = [];
+        $lookupNode = $this->lookup($query);
+        if ($lookupNode === null) {
+            return $output;
+        }
 
-    // private function getLeafValues(Node $node): array
-    // {
-    //     if ($node->isLeaf()) {
-    //         return [$node->getLabel()];
-    //     }
-    //     $output = [];
-    //     foreach ($node->getEdges() as $edge) {
-    //         $output = array_merge($this->getLeafValues($edge->getTargetNode()), $output);
-    //     }
+        return $this->getLeafValuesForPrefix(
+            $lookupNode,
+            $query
+        );
+    }
 
-    //     return $output;
-    // }
+    private function lookup(string $query): ?Node
+    {
+        if ($this->rootNode === null) {
+            return null;
+        }
+        $currentNode = $this->rootNode;
+        $currentEdgeLength = 0;
+
+        while (
+            $currentNode !== null
+            && !$currentNode->isLeaf()
+            && $currentEdgeLength < strlen($query)
+        ) {
+            $edge = $this->getMatchingEdge(
+                $currentNode,
+                $query
+            );
+            if ($edge === null) {
+                return $currentNode;
+            }
+
+            $currentNode = $edge->getTargetNode();
+            $currentEdgeLength = strlen($edge->getLabel());
+        }
+
+        return $currentNode;
+    }
+
+    private function getMatchingEdge(
+        Node $node,
+        string $query
+    ): ?Edge {
+        $leftover = str_replace(
+            $node->getLabel(),
+            '',
+            $query
+        );
+        foreach ($node->getEdges() as $edge) {
+            $matchingAmount = $this->stringHelper->getAmountOfMatchingSymbols(
+                $leftover,
+                $edge->getLabel()
+            );
+            if (
+                $matchingAmount > 0
+                && $matchingAmount === strlen($edge->getLabel())
+            ) {
+                return $edge;
+            }
+        }
+
+        return null;
+    }
+
+    private function getLeafValuesForPrefix(
+        Node $node,
+        string $prefix
+    ): array {
+        if ($node->isLeaf()) {
+            return [$node->getLabel()];
+        }
+
+        $output = [];
+        foreach ($node->getEdges() as $edge) {
+            if (
+                $this->stringHelper->getAmountOfMatchingSymbols(
+                    $edge->getTargetNode()->getLabel(),
+                    $prefix
+                ) < strlen($prefix)
+            ) {
+                // @todo alex make sure that covered by docker run --rm -it --add-host=host.docker.internal:host-gateway -u $(id -u):$(id -g) -w /tmp -v ${PWD}:/tmp lib-radix-trie php -d pcov.enabled=1  vendor/bin/phpunit --coverage-clover=.vscode/coverage/coverage.xml --filter=testSameWordRootButLongerWordWontBeFound
+                continue;
+            }
+
+            $output = array_merge(
+                $output,
+                $this->getLeafValuesForPrefix(
+                    $edge->getTargetNode(),
+                    $prefix
+                )
+            );
+        }
+
+        return $output;
+    }
 
     public function insert(string $word): void
     {
-        //@todo: edge case when node already exists with empty leaf value
-        $lookupNode = $this->lookup($word, false);
+        $closestNode = $this->lookup($word);
 
-        if (null === $lookupNode) {
-            $this->rootNode = new Node(
-                $word
-            );
-
+        if ($closestNode->getLabel() === $word) {
             return;
         }
 
-        // test + tester
-        // test -> () -> test
-        //      -> ('er') -> tester
-        // comon = 'test'
-        // old = ''
-        // new 'er'
+        if ($this->ifLeafHaveToBePreserved(
+            $closestNode,
+            $word
+        )) {
+            $this->addNewEdge(
+                $closestNode,
+                $closestNode->getLabel()
+            );
+        }
 
-        $commonPrefix = $this->getCommonPrefix(
-            $lookupNode->getLabel(),
+        $this->addNewEdge(
+            $closestNode,
             $word
         );
-        $commonNode = new Node(
-            $commonPrefix
+    }
+
+    private function ifLeafHaveToBePreserved(
+        Node $baseNode,
+        string $word
+    ): bool {
+        $baseNodeLabel = $baseNode->getLabel();
+
+        return $baseNode->isLeaf()
+            && $baseNodeLabel !== ''
+            && $this->stringHelper->getAmountOfMatchingSymbols(
+                $baseNodeLabel,
+                $word
+            ) === strlen($baseNodeLabel)
+        ;
+    }
+
+    private function addNewEdge(
+        Node $baseNode,
+        string $word
+    ): void {
+        $node = new Node($word);
+        $edge = new Edge(
+            $this->stringHelper->getSuffix(
+                $baseNode->getLabel(),
+                $word
+            ),
+            $node
         );
-        $commonEdge
+
+        $baseNode->addEdge($edge);
+    }
+
+    //     //@todo: edge case when node already exists with empty leaf value
+    //     $lookupNode = $this->lookup($word, false);
+
+    //     if (null === $lookupNode) {
+    //         $this->rootNode = new Node(
+    //             $word
+    //         );
+
+    //         return;
+    //     }
+
+    //     // test + tester
+    //     // test -> () -> test
+    //     //      -> ('er') -> tester
+    //     // comon = 'test'
+    //     // old = ''
+    //     // new 'er'
+
+    //     $commonPrefix = $this->getCommonPrefix(
+    //         $lookupNode->getLabel(),
+    //         $word
+    //     );
+    //     $commonNode = new Node(
+    //         $commonPrefix
+    //     );
+
+    //     $oldLeftoverSuffix = $this->getSuffix($commonPrefix, $lookupNode->getLabel());
+    //     $newLeftoverSuffix = $this->getSuffix($commonPrefix, $word);
+
+    //     $newCommonEdge = new Edge(
+    //         $commonPrefix
+    //     );
 
 
-        $oldLeftoverSuffix = $this->getSuffix($commonPrefix, $lookupNode->getLabel());
-        $newLeftoverSuffix = $this->getSuffix($commonPrefix, $word);
-
-        $newCommonEdge = new Edge(
-            $commonPrefix
-        );
 
 
-
-
-        $leftEdge = new Edge(
-            $oldLeftoverSuffix,
-            null
-        );
-        $leftEdge->addEdges($lookupNode->getEdges());
-        $lookupNode->setEdges(
-            [
-                $newCommonEdge,
-            ]
-        );
+    //     $leftEdge = new Edge(
+    //         $oldLeftoverSuffix,
+    //         null
+    //     );
+    //     $leftEdge->addEdges($lookupNode->getEdges());
+    //     $lookupNode->setEdges(
+    //         [
+    //             $newCommonEdge,
+    //         ]
+    //     );
 
         // if (
         //     str_starts_with(
@@ -143,7 +273,7 @@ class RadixTrie
 
         //     )
         // )
-    }
+    // }
 
     private function getCommonPrefix(string $text1, string $text2): string
     {
@@ -152,39 +282,5 @@ class RadixTrie
         $intersect = array_intersect_assoc($array1, $array2);
 
         return implode('', $intersect);
-    }
-
-    private function getSuffix(string $prefix, string $haystack): string
-    {
-        return explode($prefix, $haystack, 2)[1];
-    }
-
-
-//    t -> (oast) -> toast -> (er) -> toaster
-//    t(oad)
-
-    /**
-     * @todo it should return array
-     */
-    private function lookup(string $query, bool $exactMatch = true): ?Node
-    {
-        if ($this->rootNode === null) {
-            return null;
-        }
-        $currentNode = $this->rootNode;
-        // $currentEdgeLength = 0;
-
-        // while ($currentNode !== null && !$currentNode->isLeaf() && $currentEdgeLength < strlen($query)) {
-        while ($currentNode !== null && !$currentNode->isLeaf() && $currentNode->getLabel() !== $query) {
-            $edge = $currentNode->getMatchingEdge($query);
-            if ($edge === null) {
-                return $exactMatch ? null : $currentNode;
-            }
-
-            $currentNode = $edge->getTargetNode(); // @todo maybe do not expose node internals here?
-            // $currentEdgeLength = strlen($edge->getLabel());
-        }
-
-        return $currentNode;
     }
 }

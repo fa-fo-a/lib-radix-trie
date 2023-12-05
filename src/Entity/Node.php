@@ -39,22 +39,6 @@ class Node
         return $this->edges;
     }
 
-    public function getMatchingEdge(string $query): ?Edge
-    {
-        foreach ($this->edges as $edge) {
-            if (str_starts_with(
-                $query,
-                $edge
-                    ->getTargetNode()
-                    ->getLabel()
-            )) {
-                return $edge;
-            }
-        }
-
-        return null;
-    }
-
     public function isLeaf(): bool
     {
         return $this->edges === [];
