@@ -12,7 +12,7 @@ class RadixTrie
     private StringHelper $stringHelper;
 
     public function __construct(
-        private Node $rootNode = new Node('')
+        private Node $rootNode = new Node(Node::ROOT_LABEL)
     ) {
         $this->stringHelper = new StringHelper();
     }
@@ -127,20 +127,99 @@ class RadixTrie
             return;
         }
 
-        if ($this->ifLeafHaveToBePreserved(
-            $closestNode,
-            $word
-        )) {
-            $this->addNewEdge(
-                $closestNode,
-                $closestNode->getLabel()
-            );
-        }
-
-        $this->addNewEdge(
+        $baseNode = $this->getBaseNode(
             $closestNode,
             $word
         );
+
+        $this->addNewEdge(
+            $baseNode,
+            $word
+        );
+    }
+
+    private function getBaseNode(
+        Node $baseNode,
+        string $word
+    ): Node {
+        // @todo: fix test when adding node with same label without empty edge
+        if (
+            $baseNode->isLeaf()
+            && !$baseNode->isRoot()
+        ) {
+            $this->addNewEdge(
+                $baseNode,
+                $baseNode->getLabel()
+            );
+        }
+
+        $partialEdge = $this->getPartialMatchingEdge(
+            $baseNode,
+            $word
+        );
+        if ($partialEdge === null) {
+            return $baseNode;
+        }
+
+        $mutualPrefix = $this->stringHelper->getMutualPrefix(
+            $partialEdge->getTargetNode()->getLabel(),
+            $word
+        );
+        $newNode = new Node($mutualPrefix);
+        $newNode->addEdge(
+            new Edge(
+                $this->stringHelper->getSuffix(
+                    $mutualPrefix,
+                    $partialEdge->getTargetNode()->getLabel()
+                ),
+                $partialEdge->getTargetNode()
+            )
+        );
+        $partialEdge->setLabel(
+            $this->stringHelper->getSuffix(
+                $baseNode->getLabel(),
+                $mutualPrefix
+            )
+        );
+        $partialEdge->setTargetNode($newNode);
+
+        return $newNode;
+    }
+
+    private function getPartialMatchingEdge(
+        Node $baseNode,
+        string $word
+    ): ?Edge {
+        $suffix = $this->stringHelper->getSuffix(
+            $baseNode->getLabel(),
+            $word
+        );
+        foreach ($baseNode->getEdges() as $edge) {
+            $matchingAmount = $this->stringHelper->getAmountOfMatchingSymbols(
+                $edge->getLabel(),
+                $suffix
+            );
+            if (
+                $matchingAmount > 0
+                && $matchingAmount < strlen($edge->getLabel())
+            ) {
+                return $edge;
+            }
+        }
+
+        return null;
+    }
+
+    private function hasSameLabelLeaf(
+        Node $node
+    ): bool {
+        foreach ($node->getEdges() as $edge) {
+            if ($node->getLabel() === $edge->getTargetNode()->getLabel()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function ifLeafHaveToBePreserved(
@@ -151,10 +230,10 @@ class RadixTrie
 
         return $baseNode->isLeaf()
             && $baseNodeLabel !== ''
-            && $this->stringHelper->getAmountOfMatchingSymbols(
-                $baseNodeLabel,
-                $word
-            ) === strlen($baseNodeLabel)
+            // && $this->stringHelper->getAmountOfMatchingSymbols(
+            //     $baseNodeLabel,
+            //     $word
+            // ) === strlen($baseNodeLabel)
         ;
     }
 

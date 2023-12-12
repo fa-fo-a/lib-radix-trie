@@ -8,6 +8,8 @@ use achertovsky\RadixTrie\Entity\Edge;
 
 class Node
 {
+    public const ROOT_LABEL = '';
+
     /**
      * @var Edge[]
      */
@@ -42,5 +44,10 @@ class Node
     public function isLeaf(): bool
     {
         return $this->edges === [];
+    }
+
+    public function isRoot(): bool
+    {
+        return $this->label === self::ROOT_LABEL;
     }
 }

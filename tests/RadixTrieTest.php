@@ -16,7 +16,7 @@ class RadixTrieTest extends TestCase
     {
         // '' => (test) => test => (er) => tester
         //                      => () => test
-        $rootNode = new Node('');
+        $rootNode = new Node(Node::ROOT_LABEL);
         $trie = new RadixTrie(
             $rootNode
         );
@@ -62,8 +62,8 @@ class RadixTrieTest extends TestCase
         array $actualArray,
         string $explanation = ''
     ): void {
-        asort($expectedArray);
-        asort($actualArray);
+        sort($expectedArray);
+        sort($actualArray);
 
         $this->assertEquals(
             $expectedArray,
@@ -75,7 +75,7 @@ class RadixTrieTest extends TestCase
     public function testSingleValueInsertWouldInsert(): void
     {
         $trie = new RadixTrie(
-            new Node('')
+            new Node(Node::ROOT_LABEL)
         );
 
         $trie->insert('test');
@@ -100,7 +100,7 @@ class RadixTrieTest extends TestCase
     public function testBuildTrieWithSameWordRoot(): void
     {
         $trie = new RadixTrie(
-            new Node('')
+            new Node(Node::ROOT_LABEL)
         );
 
         $trie->insert('test');
@@ -129,7 +129,7 @@ class RadixTrieTest extends TestCase
     public function testSameWordRootButLongerWordWontBeFound(): void
     {
         $trie = new RadixTrie(
-            new Node('')
+            new Node(Node::ROOT_LABEL)
         );
 
         $trie->insert('test');
@@ -143,7 +143,7 @@ class RadixTrieTest extends TestCase
     public function testShouldReturnWordsWithOnlyRelevantPrefixes(): void
     {
         $trie = new RadixTrie(
-            new Node('')
+            new Node(Node::ROOT_LABEL)
         );
 
         $trie->insert('tool');
@@ -158,10 +158,30 @@ class RadixTrieTest extends TestCase
         );
     }
 
+    public function testAddingNodeWordWouldBeAddedAsLeaf(): void
+    {
+        $trie = new RadixTrie(
+            new Node(Node::ROOT_LABEL)
+        );
+
+        $trie->insert('tester');
+        $trie->insert('testing');
+        $trie->insert('test');
+
+        $this->assertArraysHaveEqualDataset(
+            [
+                'test',
+                'tester',
+                'testing',
+            ],
+            $trie->find('test')
+        );
+    }
+
     public function testBuildTrieWithSamePrefixes(): void
     {
         $trie = new RadixTrie(
-            new Node('')
+            new Node(Node::ROOT_LABEL)
         );
 
         $trie->insert('tester');
@@ -204,5 +224,12 @@ class RadixTrieTest extends TestCase
             $trie->find('to'),
             'finds tool leaf'
         );
+        // $this->assertArraysHaveEqualDataset(
+        //     [
+        //         'tester',
+        //     ],
+        //     $trie->find('teste'),
+        //     'finds tester partial edge'
+        // );
     }
 }

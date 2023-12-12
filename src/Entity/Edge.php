@@ -19,8 +19,22 @@ class Edge
         return $this->label;
     }
 
+    public function setLabel(string $label): self
+    {
+        $this->label = $label;
+
+        return $this;
+    }
+
     public function getTargetNode(): Node
     {
         return $this->targetNode;
+    }
+
+    public function setTargetNode(Node $node): self
+    {
+        $this->targetNode = $node;
+
+        return $this;
     }
 }
