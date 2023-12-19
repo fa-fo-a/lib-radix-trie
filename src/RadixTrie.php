@@ -36,9 +36,6 @@ class RadixTrie
 
     private function lookup(string $query): ?Node
     {
-        if ($this->rootNode === null) {
-            return null;
-        }
         $currentNode = $this->rootNode;
         $currentEdgeLength = 0;
 
@@ -66,9 +63,8 @@ class RadixTrie
         Node $node,
         string $query
     ): ?Edge {
-        $leftover = str_replace(
+        $leftover = $this->stringHelper->getSuffix(
             $node->getLabel(),
-            '',
             $query
         );
         foreach ($node->getEdges() as $edge) {
@@ -103,7 +99,6 @@ class RadixTrie
                     $prefix
                 ) < strlen($prefix)
             ) {
-                // @todo alex make sure that covered by docker run --rm -it --add-host=host.docker.internal:host-gateway -u $(id -u):$(id -g) -w /tmp -v ${PWD}:/tmp lib-radix-trie php -d pcov.enabled=1  vendor/bin/phpunit --coverage-clover=.vscode/coverage/coverage.xml --filter=testSameWordRootButLongerWordWontBeFound
                 continue;
             }
 
@@ -123,44 +118,60 @@ class RadixTrie
     {
         $closestNode = $this->lookup($word);
 
-        if ($closestNode->getLabel() === $word) {
+        if (
+            $closestNode->getLabel() === $word
+            && $closestNode->isLeaf()
+        ) {
             return;
         }
 
-        $baseNode = $this->getBaseNode(
-            $closestNode,
-            $word
-        );
-
-        $this->addNewEdge(
-            $baseNode,
-            $word
-        );
-    }
-
-    private function getBaseNode(
-        Node $baseNode,
-        string $word
-    ): Node {
-        // @todo: fix test when adding node with same label without empty edge
         if (
-            $baseNode->isLeaf()
-            && !$baseNode->isRoot()
+            $closestNode->getLabel() === $word
+            && !$closestNode->isLeaf()
+            && !$this->hasSameLabelLeaf($closestNode)
         ) {
             $this->addNewEdge(
-                $baseNode,
-                $baseNode->getLabel()
+                $closestNode,
+                $closestNode->getLabel()
+            );
+
+            return;
+        }
+
+        if (
+            $closestNode->isLeaf()
+            && !$closestNode->isRoot()
+        ) {
+            $this->addNewEdge(
+                $closestNode,
+                $closestNode->getLabel()
             );
         }
 
         $partialEdge = $this->getPartialMatchingEdge(
-            $baseNode,
+            $closestNode,
             $word
         );
-        if ($partialEdge === null) {
-            return $baseNode;
+        if ($partialEdge !== null) {
+            $closestNode = $this->divideEdge(
+                $closestNode,
+                $partialEdge,
+                $word
+            );
         }
 
+        $this->addNewEdge(
+            $closestNode,
+            $word
+        );
+    }
+
+    private function divideEdge(
+        Node $baseNode,
+        Edge $partialEdge,
+        string $word
+    ): Node {
+        // @todo: fix test when adding node with same label without empty edge
         $mutualPrefix = $this->stringHelper->getMutualPrefix(
             $partialEdge->getTargetNode()->getLabel(),
             $word
@@ -210,33 +221,6 @@ class RadixTrie
         return null;
     }
 
-    private function hasSameLabelLeaf(
-        Node $node
-    ): bool {
-        foreach ($node->getEdges() as $edge) {
-            if ($node->getLabel() === $edge->getTargetNode()->getLabel()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private function ifLeafHaveToBePreserved(
-        Node $baseNode,
-        string $word
-    ): bool {
-        $baseNodeLabel = $baseNode->getLabel();
-
-        return $baseNode->isLeaf()
-            && $baseNodeLabel !== ''
-            // && $this->stringHelper->getAmountOfMatchingSymbols(
-            //     $baseNodeLabel,
-            //     $word
-            // ) === strlen($baseNodeLabel)
-        ;
-    }
-
     private function addNewEdge(
         Node $baseNode,
         string $word
@@ -253,113 +237,15 @@ class RadixTrie
         $baseNode->addEdge($edge);
     }
 
-    //     //@todo: edge case when node already exists with empty leaf value
-    //     $lookupNode = $this->lookup($word, false);
+    private function hasSameLabelLeaf(
+        Node $node
+    ): bool {
+        foreach ($node->getEdges() as $edge) {
+            if ($node->getLabel() === $edge->getTargetNode()->getLabel()) {
+                return true;
+            }
+        }
 
-    //     if (null === $lookupNode) {
-    //         $this->rootNode = new Node(
-    //             $word
-    //         );
-
-    //         return;
-    //     }
-
-    //     // test + tester
-    //     // test -> () -> test
-    //     //      -> ('er') -> tester
-    //     // comon = 'test'
-    //     // old = ''
-    //     // new 'er'
-
-    //     $commonPrefix = $this->getCommonPrefix(
-    //         $lookupNode->getLabel(),
-    //         $word
-    //     );
-    //     $commonNode = new Node(
-    //         $commonPrefix
-    //     );
-
-    //     $oldLeftoverSuffix = $this->getSuffix($commonPrefix, $lookupNode->getLabel());
-    //     $newLeftoverSuffix = $this->getSuffix($commonPrefix, $word);
-
-    //     $newCommonEdge = new Edge(
-    //         $commonPrefix
-    //     );
-
-
-
-
-    //     $leftEdge = new Edge(
-    //         $oldLeftoverSuffix,
-    //         null
-    //     );
-    //     $leftEdge->addEdges($lookupNode->getEdges());
-    //     $lookupNode->setEdges(
-    //         [
-    //             $newCommonEdge,
-    //         ]
-    //     );
-
-        // if (
-        //     str_starts_with(
-        //         $word,
-        //         $lookupNode->getLabel()
-        //     )
-        // )
-        // $newNode = new Node($word);
-        // $newEdge = new Edge(
-        //     $this->getSuffix(
-        //         $lookupNode->getLabel(),
-        //         $word
-        //     ),
-        //     $newNode
-        // );
-        // $lookupNode->addEdge($newEdge);
-
-        // $newLeaf = new Node($lookupNode->getLabel());
-        // $newLeafEdge = new Edge(
-        //     '',
-        //     $newLeaf
-        // );
-        // $lookupNode->addEdge($newLeafEdge);
-
-//        $closestEdge = $lookupNode->getMatchingEdge($word, false);
-//        $matchingLabel = 'o';
-//        $leftOverLabel = 'st';
-//        $insertedLabel = 'ast';
-//        $newNode = new Node($lookupNode->getLabel() . $matchingLabel);
-//        $newEdge = new Edge($leftOverLabel);
-
-        // define left, define right
-
-
-//        $lookupNode->insert($word);
-
-//        public function insert(string $word): void
-//    {
-//
-//        word: toad
-//        t
-//        (oast)
-//            toad - t  = oad
-//
-//    }
-
-        // @todo next part is find mutual suffix between addAfterNode label and word we adding and rebuild the trie
-        // $addAfterNode->addEdge(
-        //     new Edge(
-        //         $addAfterNode->getLabel(),
-
-        //     )
-        // )
-    // }
-
-    private function getCommonPrefix(string $text1, string $text2): string
-    {
-        $array1 = str_split($text1);
-        $array2 = str_split($text2);
-        $intersect = array_intersect_assoc($array1, $array2);
-
-        return implode('', $intersect);
+        return false;
     }
 }

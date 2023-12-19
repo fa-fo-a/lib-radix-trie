@@ -216,6 +216,7 @@ class RadixTrieTest extends TestCase
             $trie->find('tool'),
             'finds tool leaf'
         );
+
         $this->assertArraysHaveEqualDataset(
             [
                 'to',
@@ -224,12 +225,25 @@ class RadixTrieTest extends TestCase
             $trie->find('to'),
             'finds tool leaf'
         );
-        // $this->assertArraysHaveEqualDataset(
-        //     [
-        //         'tester',
-        //     ],
-        //     $trie->find('teste'),
-        //     'finds tester partial edge'
-        // );
     }
+
+    public function testPartialSearch(): void
+    {
+        $trie = new RadixTrie(
+            new Node(Node::ROOT_LABEL)
+        );
+
+        $trie->insert('tester');
+        $trie->insert('test');
+        $trie->insert('to');
+
+        $this->assertArraysHaveEqualDataset(
+            [
+                'tester',
+            ],
+            $trie->find('teste'),
+            'finds tester partial edge'
+        );
+    }
+    // @todo add faker and generate a lot of words, search for '' and result should match unique(faker data)
 }
