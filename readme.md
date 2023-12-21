@@ -8,14 +8,19 @@ To check usage cases, please, refer to `tests/Service/JwtManagerTest.php`, `test
 ## install env
 ```
 docker build -t lib-radix-trie .
-docker run --rm -it -u $(id -u):$(id -g) -w /tmp -v ${PWD}:/tmp lib-radix-trie composer i
+docker run -m 200m --cpus 0.3 --rm -it -u $(id -u):$(id -g) -w /tmp -v ${PWD}:/tmp lib-radix-trie composer i
 ```
 ## testing
 ```
-docker run --rm -it -u $(id -u):$(id -g) -w /tmp -v ${PWD}:/tmp lib-radix-trie vendor/bin/phpunit
+docker run -m 200m --cpus 0.3 --rm -it -u $(id -u):$(id -g) -w /tmp -v ${PWD}:/tmp lib-radix-trie vendor/bin/phpunit
+```
+
+## benchmarking
+```
+docker run --rm -it -u $(id -u):$(id -g) -w /tmp -v ${PWD}:/tmp lib-radix-trie php tests/benchmark.php
 ```
 
 ## testing with xdebugging (xdebug on 9001 by default)
 ```
-docker run --rm -it --add-host=host.docker.internal:host-gateway -u $(id -u):$(id -g) -w /tmp -v ${PWD}:/tmp lib-radix-trie vendor/bin/phpunit
+docker run -m 200m --cpus 0.3 --rm -it --add-host=host.docker.internal:host-gateway -u $(id -u):$(id -g) -w /tmp -v ${PWD}:/tmp lib-radix-trie vendor/bin/phpunit
 ```

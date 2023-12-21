@@ -4,27 +4,24 @@ namespace achertovsky\RadixTrie;
 
 class StringHelper
 {
-    public function getAmountOfMatchingSymbols(
+    public function getCommonPrefixLength(
         string $line1,
         string $line2
     ): int {
+        $maxLength = min(
+            strlen($line1),
+            strlen($line2)
+        );
+
         $arrayedLine1 = str_split($line1);
         $arrayedLine2 = str_split($line2);
+        for ($i = 0; $i < $maxLength; $i++) {
+            if ($arrayedLine1[$i] !== $arrayedLine2[$i]) {
+                return $i;
+            }
+        }
 
-        return max(
-            count(
-                array_intersect_assoc(
-                    $arrayedLine1,
-                    $arrayedLine2
-                )
-            ),
-            count(
-                array_intersect_assoc(
-                    $arrayedLine2,
-                    $arrayedLine1
-                )
-            )
-        );
+        return $maxLength;
     }
 
     public function getSuffix(string $prefix, string $haystack): string
@@ -41,7 +38,7 @@ class StringHelper
         return substr(
             $haystack,
             0,
-            $this->getAmountOfMatchingSymbols(
+            $this->getCommonPrefixLength(
                 $haystack,
                 $needle
             )

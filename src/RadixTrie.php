@@ -7,6 +7,10 @@ namespace achertovsky\RadixTrie;
 use achertovsky\RadixTrie\Entity\Edge;
 use achertovsky\RadixTrie\Entity\Node;
 
+/**
+ * @todo optimize the code using benchmark
+ * @todo refactor
+ */
 class RadixTrie
 {
     private StringHelper $stringHelper;
@@ -28,9 +32,18 @@ class RadixTrie
             return $output;
         }
 
-        return $this->getLeafValuesForPrefix(
-            $lookupNode,
-            $query
+        return array_filter(
+            $this->getLeafValuesForPrefix(
+                $lookupNode,
+                $query
+            ),
+            function (string $value): bool {
+                if ($value === '') {
+                    return false;
+                }
+
+                return true;
+            }
         );
     }
 
@@ -68,7 +81,7 @@ class RadixTrie
             $query
         );
         foreach ($node->getEdges() as $edge) {
-            $matchingAmount = $this->stringHelper->getAmountOfMatchingSymbols(
+            $matchingAmount = $this->stringHelper->getCommonPrefixLength(
                 $leftover,
                 $edge->getLabel()
             );
@@ -94,7 +107,7 @@ class RadixTrie
         $output = [];
         foreach ($node->getEdges() as $edge) {
             if (
-                $this->stringHelper->getAmountOfMatchingSymbols(
+                $this->stringHelper->getCommonPrefixLength(
                     $edge->getTargetNode()->getLabel(),
                     $prefix
                 ) < strlen($prefix)
@@ -135,6 +148,14 @@ class RadixTrie
                 $closestNode->getLabel()
             );
 
+            return;
+        }
+
+        if (
+            $closestNode->getLabel() === $word
+            && !$closestNode->isLeaf()
+            && $this->hasSameLabelLeaf($closestNode)
+        ) {
             return;
         }
 
@@ -206,7 +227,7 @@ class RadixTrie
             $word
         );
         foreach ($baseNode->getEdges() as $edge) {
-            $matchingAmount = $this->stringHelper->getAmountOfMatchingSymbols(
+            $matchingAmount = $this->stringHelper->getCommonPrefixLength(
                 $edge->getLabel(),
                 $suffix
             );

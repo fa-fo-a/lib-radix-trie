@@ -9,9 +9,10 @@ use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\RadixTrie;
 use achertovsky\RadixTrie\Entity\Edge;
 
-/** @todo add test that find with empty string will return none */
 class RadixTrieTest extends TestCase
 {
+    private const ARBITRARY_AMOUNT_OF_WORDS_FOR_STRESSTEST = 3000;
+
     public function testSearchWorksGood(): void
     {
         // '' => (test) => test => (er) => tester
@@ -105,6 +106,7 @@ class RadixTrieTest extends TestCase
 
         $trie->insert('test');
         $trie->insert('tester');
+        $trie->insert('test');
         $this->assertArraysHaveEqualDataset(
             [
                 'test',
@@ -196,7 +198,7 @@ class RadixTrieTest extends TestCase
                 'tool',
                 'to',
             ],
-            $trie->find('t'),
+            $trie->find(''),
             'finds all leafs'
         );
 
@@ -245,5 +247,57 @@ class RadixTrieTest extends TestCase
             'finds tester partial edge'
         );
     }
-    // @todo add faker and generate a lot of words, search for '' and result should match unique(faker data)
+
+    public function testEmptyTryFindWouldReturnNone(): void
+    {
+        $trie = new RadixTrie(
+            new Node(Node::ROOT_LABEL)
+        );
+
+        $this->assertEquals(
+            [],
+            $trie->find('')
+        );
+
+        $this->assertEquals(
+            [],
+            $trie->find('whatever')
+        );
+    }
+
+    /** @todo get it out as another testfile */
+    public function testStresstest(): void
+    {
+        $trie = new RadixTrie(
+            new Node(Node::ROOT_LABEL)
+        );
+        $words = [];
+        for ($i = 0; $i < self::ARBITRARY_AMOUNT_OF_WORDS_FOR_STRESSTEST; $i++) {
+            $words[] = $word = $this->randomString(
+                mt_rand(
+                    2,
+                    10
+                )
+            );
+            $trie->insert(
+                $word
+            );
+        }
+
+        $this->assertArraysHaveEqualDataset(
+            array_unique($words),
+            $trie->find('')
+        );
+    }
+
+    private function randomString($length = 6)
+    {
+        $result = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $result .= chr(mt_rand(97, 122));
+        }
+
+        return $result;
+    }
 }
