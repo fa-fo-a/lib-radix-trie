@@ -8,8 +8,8 @@ use achertovsky\RadixTrie\Entity\Edge;
 use achertovsky\RadixTrie\Entity\Node;
 
 /**
- * @todo optimize the code using benchmark
  * @todo refactor
+ * @todo optimize the code using benchmark
  */
 class RadixTrie
 {
@@ -192,7 +192,6 @@ class RadixTrie
         Edge $partialEdge,
         string $word
     ): Node {
-        // @todo: fix test when adding node with same label without empty edge
         $mutualPrefix = $this->stringHelper->getMutualPrefix(
             $partialEdge->getTargetNode()->getLabel(),
             $word
