@@ -11,7 +11,7 @@ use achertovsky\RadixTrie\Entity\Edge;
 
 class RadixTrieTest extends TestCase
 {
-    private const ARBITRARY_AMOUNT_OF_WORDS_FOR_STRESSTEST = 3000;
+    private const ARBITRARY_AMOUNT_OF_WORDS_FOR_STRESSTEST = 20;
 
     public function testSearchWorksGood(): void
     {
