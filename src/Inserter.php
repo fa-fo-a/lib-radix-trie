@@ -7,8 +7,9 @@ namespace achertovsky\RadixTrie;
 use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\InsertRules\AddLeafRule;
 use achertovsky\RadixTrie\InsertRules\BaseRule;
-use achertovsky\RadixTrie\InsertRules\GrowLeafFromNonRootLeafRule;
 use achertovsky\RadixTrie\InsertRules\DontInsertExistingRule;
+use achertovsky\RadixTrie\InsertRules\FirstLeafRule;
+use achertovsky\RadixTrie\InsertRules\JustAddLeafRule;
 use achertovsky\RadixTrie\InsertRules\MatchingNodeAndMatchingLeafRule;
 use achertovsky\RadixTrie\InsertRules\MatchingNodeAndMissingLeafRule;
 
@@ -22,10 +23,11 @@ class Inserter
         $this->nodeSearcher = new NodeSearcher();
         //@todo: add easiest checks at beginning
         $this->rules = [
+            new FirstLeafRule(),
+            new JustAddLeafRule(),
             new DontInsertExistingRule(),
             new MatchingNodeAndMatchingLeafRule(),
             new MatchingNodeAndMissingLeafRule(),
-            new GrowLeafFromNonRootLeafRule(),
             new AddLeafRule(),
         ];
     }

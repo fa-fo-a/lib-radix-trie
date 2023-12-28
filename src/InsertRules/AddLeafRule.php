@@ -6,7 +6,6 @@ namespace achertovsky\RadixTrie\InsertRules;
 
 use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\Entity\Edge;
-use achertovsky\RadixTrie\StringHelper;
 
 class AddLeafRule extends BaseRule
 {

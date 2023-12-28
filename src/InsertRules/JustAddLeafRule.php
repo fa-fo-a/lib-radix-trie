@@ -7,7 +7,7 @@ namespace achertovsky\RadixTrie\InsertRules;
 use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\Entity\Edge;
 
-class GrowLeafFromNonRootLeafRule extends BaseRule
+class JustAddLeafRule extends BaseRule
 {
     public function supports(
         Node $node,
@@ -15,11 +15,7 @@ class GrowLeafFromNonRootLeafRule extends BaseRule
     ): bool {
         return
             $node->isLeaf()
-            && !$node->isRoot()
-            && $this->getPartialMatchingEdge(
-                $node,
-                $word
-            )
+            && $node->getLabel() !== $word
         ;
     }
 
@@ -29,7 +25,23 @@ class GrowLeafFromNonRootLeafRule extends BaseRule
     ): void {
         $this->addNewEdge(
             $node,
-            $node->getLabel()
+            $word
         );
+
+        $this->preserveLeaf(
+            $node
+        );
+    }
+
+    private function preserveLeaf(
+        Node $baseNode
+    ): void {
+        $node = new Node($baseNode->getLabel());
+        $edge = new Edge(
+            "",
+            $node
+        );
+
+        $baseNode->addEdge($edge);
     }
 }

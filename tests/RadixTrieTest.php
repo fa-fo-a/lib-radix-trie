@@ -106,7 +106,6 @@ class RadixTrieTest extends TestCase
 
         $trie->insert('test');
         $trie->insert('tester');
-        $trie->insert('test');
         $this->assertArraysHaveEqualDataset(
             [
                 'test',
@@ -114,6 +113,16 @@ class RadixTrieTest extends TestCase
             ],
             $trie->find('t'),
             'finds all leafs'
+        );
+
+        $trie->insert('test');
+        $this->assertArraysHaveEqualDataset(
+            [
+                'test',
+                'tester',
+            ],
+            $trie->find('t'),
+            'wont duplicate'
         );
 
         $trie->insert('testing');
