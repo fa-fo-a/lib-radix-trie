@@ -7,9 +7,9 @@ namespace achertovsky\RadixTrie\Tests;
 use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\RadixTrie;
 use achertovsky\RadixTrie\Entity\Edge;
-use achertovsky\RadixTrie\Tests\BaseTest;
+use achertovsky\RadixTrie\Tests\BaseTestCase;
 
-class RadixTrieTest extends BaseTest
+class RadixTrieTest extends BaseTestCase
 {
     public function testSearchWorksGood(): void
     {

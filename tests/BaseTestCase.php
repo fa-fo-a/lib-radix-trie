@@ -6,7 +6,7 @@ namespace achertovsky\RadixTrie\Tests;
 
 use PHPUnit\Framework\TestCase;
 
-class BaseTest extends TestCase
+class BaseTestCase extends TestCase
 {
     protected function assertArraysHaveEqualDataset(
         array $expectedArray,
@@ -21,10 +21,5 @@ class BaseTest extends TestCase
             $actualArray,
             $explanation
         );
-    }
-
-    public function test(): void
-    {
-        $this->assertTrue(true);
     }
 }
