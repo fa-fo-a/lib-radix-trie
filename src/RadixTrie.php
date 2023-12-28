@@ -7,7 +7,6 @@ namespace achertovsky\RadixTrie;
 use achertovsky\RadixTrie\Entity\Node;
 
 /**
- * @todo refactor
  * @todo optimize the code using benchmark
  */
 class RadixTrie

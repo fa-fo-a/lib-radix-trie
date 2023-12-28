@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace achertovsky\RadixTrie;
 
 use achertovsky\RadixTrie\Entity\Node;
-use achertovsky\RadixTrie\InsertRules\AddLeafRule;
+use achertovsky\RadixTrie\InsertRules\BreakNodeInsertRule;
 use achertovsky\RadixTrie\InsertRules\BaseRule;
-use achertovsky\RadixTrie\InsertRules\DontInsertExistingRule;
+use achertovsky\RadixTrie\InsertRules\DontInsertExistingLeafRule;
 use achertovsky\RadixTrie\InsertRules\FirstLeafRule;
-use achertovsky\RadixTrie\InsertRules\JustAddLeafRule;
+use achertovsky\RadixTrie\InsertRules\AddLeafFromLeaf;
 use achertovsky\RadixTrie\InsertRules\MatchingNodeAndMatchingLeafRule;
-use achertovsky\RadixTrie\InsertRules\MatchingNodeAndMissingLeafRule;
+use achertovsky\RadixTrie\InsertRules\AddLeafFromNodeWithSameLabel;
 
 class Inserter
 {
@@ -24,11 +24,11 @@ class Inserter
         //@todo: add easiest checks at beginning
         $this->rules = [
             new FirstLeafRule(),
-            new JustAddLeafRule(),
-            new DontInsertExistingRule(),
+            new AddLeafFromLeaf(),
+            new DontInsertExistingLeafRule(),
             new MatchingNodeAndMatchingLeafRule(),
-            new MatchingNodeAndMissingLeafRule(),
-            new AddLeafRule(),
+            new AddLeafFromNodeWithSameLabel(),
+            new BreakNodeInsertRule(),
         ];
     }
 

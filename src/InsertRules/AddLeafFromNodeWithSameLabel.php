@@ -6,7 +6,7 @@ namespace achertovsky\RadixTrie\InsertRules;
 
 use achertovsky\RadixTrie\Entity\Node;
 
-class DontInsertExistingLeafRule extends BaseRule
+class AddLeafFromNodeWithSameLabel extends BaseRule
 {
     public function supports(
         Node $node,
@@ -14,7 +14,8 @@ class DontInsertExistingLeafRule extends BaseRule
     ): bool {
         return
             $node->getLabel() === $word
-            && $node->isLeaf()
+            && !$node->isLeaf()
+            && !$this->hasSameLabelLeaf($node)
         ;
     }
 
@@ -22,5 +23,9 @@ class DontInsertExistingLeafRule extends BaseRule
         Node $node,
         string $word
     ): void {
+        $this->addNewEdge(
+            $node,
+            $node->getLabel()
+        );
     }
 }

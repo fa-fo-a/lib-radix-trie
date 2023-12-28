@@ -7,7 +7,7 @@ namespace achertovsky\RadixTrie\InsertRules;
 use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\Entity\Edge;
 
-class JustAddLeafRule extends BaseRule
+class AddLeafFromLeaf extends BaseRule
 {
     public function supports(
         Node $node,

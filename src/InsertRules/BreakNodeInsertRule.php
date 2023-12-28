@@ -7,13 +7,15 @@ namespace achertovsky\RadixTrie\InsertRules;
 use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\Entity\Edge;
 
-class AddLeafRule extends BaseRule
+class BreakNodeInsertRule extends BaseRule
 {
     public function supports(
         Node $node,
         string $word
     ): bool {
-        return true;
+        return
+            !$node->isLeaf()
+        ;
     }
 
     public function apply(
@@ -24,6 +26,8 @@ class AddLeafRule extends BaseRule
             $node,
             $word
         );
+
+        // @todo currently serves 2 cases
         if ($partialEdge !== null) {
             $node = $this->divideEdge(
                 $node,
