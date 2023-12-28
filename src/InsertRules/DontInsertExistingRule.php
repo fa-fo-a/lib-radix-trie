@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace achertovsky\RadixTrie\InsertRules;
 
 use achertovsky\RadixTrie\Entity\Node;
-use achertovsky\RadixTrie\Entity\Edge;
 
-class MatchingLeafRule extends BaseRule
+class DontInsertExistingRule extends BaseRule
 {
     public function supports(
         Node $node,

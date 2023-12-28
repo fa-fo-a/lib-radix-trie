@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace achertovsky\RadixTrie\InsertRules;
 
 use achertovsky\RadixTrie\Entity\Node;
-use achertovsky\RadixTrie\Entity\Edge;
 
 class MatchingNodeAndMissingLeafRule extends BaseRule
 {
