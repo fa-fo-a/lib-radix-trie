@@ -39,31 +39,6 @@ class AddLeafRule extends BaseRule
         );
     }
 
-    private function getPartialMatchingEdge(
-        Node $baseNode,
-        string $word
-    ): ?Edge {
-        $suffix = $this->stringHelper->getSuffix(
-            $baseNode->getLabel(),
-            $word
-        );
-        foreach ($baseNode->getEdges() as $edge) {
-            $matchingAmount = $this->stringHelper->getCommonPrefixLength(
-                $edge->getLabel(),
-                $suffix
-            );
-            if (
-                $matchingAmount > 0
-                && $matchingAmount < strlen($edge->getLabel())
-            ) {
-                return $edge;
-            }
-        }
-
-        return null;
-    }
-
-
     private function divideEdge(
         Node $baseNode,
         Edge $partialEdge,
