@@ -27,9 +27,6 @@ abstract class BaseRule
         string $word
     ): void;
 
-    // @todo: should be removed, because only a single rule should apply
-    abstract public function isFinal(): bool;
-
     // @todo: consider misplaced responsibility
     protected function addNewEdge(
         Node $baseNode,

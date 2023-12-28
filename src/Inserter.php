@@ -55,9 +55,7 @@ class Inserter
                 $word
             );
 
-            if ($rule->isFinal()) {
-                return;
-            }
+            return;
         }
     }
 }

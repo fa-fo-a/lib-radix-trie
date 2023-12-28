@@ -28,9 +28,4 @@ class MatchingNodeAndMissingLeafRule extends BaseRule
             $node->getLabel()
         );
     }
-
-    public function isFinal(): bool
-    {
-        return true;
-    }
 }

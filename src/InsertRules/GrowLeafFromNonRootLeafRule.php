@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace achertovsky\RadixTrie\InsertRules;
 
 use achertovsky\RadixTrie\Entity\Node;
+use achertovsky\RadixTrie\Entity\Edge;
 
 class GrowLeafFromNonRootLeafRule extends BaseRule
 {
@@ -15,6 +16,10 @@ class GrowLeafFromNonRootLeafRule extends BaseRule
         return
             $node->isLeaf()
             && !$node->isRoot()
+            && $this->getPartialMatchingEdge(
+                $node,
+                $word
+            )
         ;
     }
 
@@ -28,8 +33,27 @@ class GrowLeafFromNonRootLeafRule extends BaseRule
         );
     }
 
-    public function isFinal(): bool
-    {
-        return false;
+    private function getPartialMatchingEdge(
+        Node $baseNode,
+        string $word
+    ): ?Edge {
+        $suffix = $this->stringHelper->getSuffix(
+            $baseNode->getLabel(),
+            $word
+        );
+        foreach ($baseNode->getEdges() as $edge) {
+            $matchingAmount = $this->stringHelper->getCommonPrefixLength(
+                $edge->getLabel(),
+                $suffix
+            );
+            if (
+                $matchingAmount > 0
+                && $matchingAmount < strlen($edge->getLabel())
+            ) {
+                return $edge;
+            }
+        }
+
+        return null;
     }
 }

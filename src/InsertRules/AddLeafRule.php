@@ -39,11 +39,6 @@ class AddLeafRule extends BaseRule
         );
     }
 
-    public function isFinal(): bool
-    {
-        return false;
-    }
-
     private function getPartialMatchingEdge(
         Node $baseNode,
         string $word

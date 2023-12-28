@@ -25,9 +25,4 @@ class MatchingNodeAndMatchingLeafRule extends BaseRule
         string $word
     ): void {
     }
-
-    public function isFinal(): bool
-    {
-        return true;
-    }
 }
