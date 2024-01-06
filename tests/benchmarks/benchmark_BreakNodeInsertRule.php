@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-include __DIR__ . '/../vendor/autoload.php';
+include __DIR__ . '/../../vendor/autoload.php';
 
 use achertovsky\RadixTrie\RadixTrie;
 use achertovsky\RadixTrie\Entity\Node;

@@ -28,22 +28,10 @@ class StringHelper
 
     public function getSuffix(string $prefix, string $haystack): string
     {
-        if ($prefix === '') {
+        if (strlen($prefix) === 0) {
             return $haystack;
         }
 
-        return explode($prefix, $haystack, 2)[1];
-    }
-
-    public function getMutualPrefix(string $haystack, string $needle): string
-    {
-        return substr(
-            $haystack,
-            0,
-            $this->getCommonPrefixLength(
-                $haystack,
-                $needle
-            )
-        );
+        return substr($haystack, strlen($prefix));
     }
 }

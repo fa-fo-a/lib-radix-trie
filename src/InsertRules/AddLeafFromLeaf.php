@@ -15,7 +15,11 @@ class AddLeafFromLeaf extends BaseRule
     ): bool {
         return
             $node->isLeaf()
-            && $node->getLabel() !== $word
+            && strlen($node->getLabel()) !== strlen($word)
+            && strpos(
+                $node->getLabel(),
+                $word
+            ) === false
         ;
     }
 

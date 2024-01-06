@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-include __DIR__ . '/../vendor/autoload.php';
+include __DIR__ . '/../../vendor/autoload.php';
 
 use achertovsky\RadixTrie\RadixTrie;
 use achertovsky\RadixTrie\Entity\Node;
@@ -38,7 +38,7 @@ $findOneWordAllEnd = microtime(true);
 
 echo sprintf(
     "Insert takes %s (s.ms)\nSearch all words takes %s (s.ms)\nSearch single word takes %s (s.ms)",
-    $insertEnd - $insertStart,
-    $findAllEnd - $findAllStart,
-    $findOneWordAllEnd - $findOneWordAllStart,
+    sprintf("%.020f", $insertEnd - $insertStart),
+    sprintf("%.020f", $findAllEnd - $findAllStart),
+    sprintf("%.020f", $findOneWordAllEnd - $findOneWordAllStart),
 )."\n";

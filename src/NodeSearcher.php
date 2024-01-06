@@ -21,23 +21,23 @@ class NodeSearcher
         string $query
     ): ?Node {
         $currentNode = $rootNode;
-        $currentEdgeLength = 0;
+        $currentLabel = $query;
 
         while (
             $currentNode !== null
             && !$currentNode->isLeaf()
-            && $currentEdgeLength < strlen($query)
+            && strlen($currentLabel) > 0
         ) {
             $edge = $this->getMatchingEdge(
                 $currentNode,
-                $query
+                $currentLabel
             );
             if ($edge === null) {
                 return $currentNode;
             }
 
             $currentNode = $edge->getTargetNode();
-            $currentEdgeLength = strlen($edge->getLabel());
+            $currentLabel = substr($currentLabel, strlen($edge->getLabel()));
         }
 
         return $currentNode;
@@ -47,19 +47,9 @@ class NodeSearcher
         Node $node,
         string $query
     ): ?Edge {
-        $leftover = $this->stringHelper->getSuffix(
-            $node->getLabel(),
-            $query
-        );
         foreach ($node->getEdges() as $edge) {
-            $matchingAmount = $this->stringHelper->getCommonPrefixLength(
-                $leftover,
-                $edge->getLabel()
-            );
-            if (
-                $matchingAmount > 0
-                && $matchingAmount === strlen($edge->getLabel())
-            ) {
+            $pos = strpos($query, $edge->getLabel());
+            if ($pos === 0 && strlen($edge->getLabel()) > 0) {
                 return $edge;
             }
         }
