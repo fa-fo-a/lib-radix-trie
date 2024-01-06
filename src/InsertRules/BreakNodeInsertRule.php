@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace achertovsky\RadixTrie\InsertRules;
 
+use achertovsky\RadixTrie\Entity\BreakRuleMetadata;
 use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\Entity\Edge;
 
@@ -22,16 +23,16 @@ class BreakNodeInsertRule extends BaseRule
         Node $node,
         string $word
     ): void {
-        $partialEdge = $this->getPartialMatchingEdge(
+        $partialEdgeResult = $this->getPartialMatchingEdge(
             $node,
             $word
         );
 
         // @todo currently serves 2 cases
-        if ($partialEdge !== null) {
+        if ($partialEdgeResult !== null) {
             $node = $this->divideEdge(
                 $node,
-                $partialEdge,
+                $partialEdgeResult,
                 $word
             );
         }
@@ -44,31 +45,52 @@ class BreakNodeInsertRule extends BaseRule
 
     private function divideEdge(
         Node $baseNode,
-        Edge $partialEdge,
+        BreakRuleMetadata $partialEdgeResult,
         string $word
     ): Node {
-        $mutualPrefix = $this->stringHelper->getMutualPrefix(
-            $partialEdge->getTargetNode()->getLabel(),
-            $word
-        );
-        $newNode = new Node($mutualPrefix);
+        $partialEdge = $partialEdgeResult->getEdge();
+        $leftLabel = substr($partialEdge->getLabel(), 0, $partialEdgeResult->getLength());
+        $rightLabel = substr($partialEdge->getLabel(), $partialEdgeResult->getLength());
+
+        $newNode = new Node($baseNode->getLabel() . $leftLabel);
         $newNode->addEdge(
             new Edge(
-                $this->stringHelper->getSuffix(
-                    $mutualPrefix,
-                    $partialEdge->getTargetNode()->getLabel()
-                ),
-                $partialEdge->getTargetNode()
+                $rightLabel,
+                $partialEdgeResult->getEdge()->getTargetNode()
             )
         );
         $partialEdge->setLabel(
-            $this->stringHelper->getSuffix(
-                $baseNode->getLabel(),
-                $mutualPrefix
-            )
+            $leftLabel
         );
         $partialEdge->setTargetNode($newNode);
 
         return $newNode;
+    }
+
+    protected function getPartialMatchingEdge(
+        Node $baseNode,
+        string $word
+    ): ?BreakRuleMetadata {
+        $suffix = $this->stringHelper->getSuffix(
+            $baseNode->getLabel(),
+            $word
+        );
+        foreach ($baseNode->getEdges() as $edge) {
+            $matchingAmount = $this->stringHelper->getCommonPrefixLength(
+                $edge->getLabel(),
+                $suffix
+            );
+            if (
+                $matchingAmount > 0
+                && $matchingAmount < strlen($edge->getLabel())
+            ) {
+                return new BreakRuleMetadata(
+                    $edge,
+                    $matchingAmount
+                );
+            }
+        }
+
+        return null;
     }
 }
