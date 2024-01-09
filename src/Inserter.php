@@ -23,7 +23,6 @@ class Inserter
         $this->nodeSearcher = new NodeSearcher();
         //@todo: add easiest checks at beginning
         $this->rules = [
-            // new FirstLeafRule(),
             new AddLeafFromLeafRule(),
             new DontInsertExistingLeafRule(),
             new MatchingNodeAndMatchingLeafRule(),

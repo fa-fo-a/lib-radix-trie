@@ -13,8 +13,12 @@ class DontInsertExistingLeafRule extends BaseRule
         string $word
     ): bool {
         return
-            $node->getLabel() === $word
-            && $node->isLeaf()
+            $node->isLeaf()
+            && strlen($node->getLabel()) === strlen($word)
+            && strpos(
+                $node->getLabel(),
+                $word
+            ) === 0
         ;
     }
 
