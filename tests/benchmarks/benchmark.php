@@ -36,6 +36,7 @@ $findOneWordAllStart = microtime(true);
 $trie->find('momzuwap');
 $findOneWordAllEnd = microtime(true);
 
+
 echo sprintf(
     "Insert takes %s (s.ms)\nSearch all words takes %s (s.ms)\nSearch single word takes %s (s.ms)",
     sprintf("%.020f", $insertEnd - $insertStart),

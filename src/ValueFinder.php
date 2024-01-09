@@ -59,12 +59,10 @@ class ValueFinder
 
         $output = [];
         foreach ($node->getEdges() as $edge) {
-            if (
-                $this->stringHelper->getCommonPrefixLength(
-                    $edge->getTargetNode()->getLabel(),
-                    $prefix
-                ) < strlen($prefix)
-            ) {
+            if (strpos(
+                $edge->getTargetNode()->getLabel(),
+                $prefix
+            ) !== 0) {
                 continue;
             }
 

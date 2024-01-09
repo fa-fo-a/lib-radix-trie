@@ -45,9 +45,4 @@ class Node
     {
         return $this->edges === [];
     }
-
-    public function isRoot(): bool
-    {
-        return $this->label === self::ROOT_LABEL;
-    }
 }

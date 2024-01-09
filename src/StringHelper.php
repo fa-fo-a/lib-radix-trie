@@ -15,10 +15,8 @@ class StringHelper
             strlen($line2)
         );
 
-        $arrayedLine1 = str_split($line1);
-        $arrayedLine2 = str_split($line2);
         for ($i = 0; $i < $maxLength; $i++) {
-            if ($arrayedLine1[$i] !== $arrayedLine2[$i]) {
+            if ($line1[$i] !== $line2[$i]) {
                 return $i;
             }
         }
