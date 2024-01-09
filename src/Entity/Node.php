@@ -41,6 +41,7 @@ class Node
         return $this->edges;
     }
 
+    // @todo add isNode flag and check by that
     public function isLeaf(): bool
     {
         return $this->edges === [];

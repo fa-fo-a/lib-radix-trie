@@ -12,7 +12,7 @@ $words = unserialize(
         __DIR__ . '/30k_words.txt'
     )
 );
-
+$start_memory = memory_get_usage();
 $trie = new RadixTrie(
     new Node(Node::ROOT_LABEL)
 );
@@ -35,7 +35,11 @@ $findAllEnd = microtime(true);
 $findOneWordAllStart = microtime(true);
 $trie->find('momzuwap');
 $findOneWordAllEnd = microtime(true);
-
+gc_collect_cycles();
+echo sprintf(
+    'Memory consumed %s Kb',
+    (memory_get_usage() - $start_memory)/1024
+)."\n";
 
 echo sprintf(
     "Insert takes %s (s.ms)\nSearch all words takes %s (s.ms)\nSearch single word takes %s (s.ms)",
