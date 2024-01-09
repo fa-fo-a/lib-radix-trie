@@ -12,12 +12,12 @@ docker run -m 200m --cpus 0.3 --rm -it -u $(id -u):$(id -g) -w /tmp -v ${PWD}:/t
 ```
 ## testing
 ```
-docker run -m 200m --cpus 0.3 --rm -it -u $(id -u):$(id -g) -w /tmp -v ${PWD}:/tmp lib-radix-trie vendor/bin/phpunit
+docker run -eXDEBUG_MODE=off -m 200m --cpus 0.3 --rm -it -u $(id -u):$(id -g) -w /tmp -v ${PWD}:/tmp lib-radix-trie vendor/bin/phpunit
 ```
 
 ## benchmarking
 ```
-docker run --rm -it -u $(id -u):$(id -g) -w /tmp -v ${PWD}:/tmp lib-radix-trie php tests/benchmark.php
+docker run -eXDEBUG_MODE=off --rm -it -u $(id -u):$(id -g) -w /tmp -v ${PWD}:/tmp lib-radix-trie php tests/benchmarks/benchmark.php
 ```
 
 ## testing with xdebugging (xdebug on 9001 by default)

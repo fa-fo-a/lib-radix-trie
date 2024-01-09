@@ -9,9 +9,9 @@ use achertovsky\RadixTrie\InsertRules\BreakNodeInsertRule;
 use achertovsky\RadixTrie\InsertRules\BaseRule;
 use achertovsky\RadixTrie\InsertRules\DontInsertExistingLeafRule;
 use achertovsky\RadixTrie\InsertRules\FirstLeafRule;
-use achertovsky\RadixTrie\InsertRules\AddLeafFromLeaf;
+use achertovsky\RadixTrie\InsertRules\AddLeafFromLeafRule;
 use achertovsky\RadixTrie\InsertRules\MatchingNodeAndMatchingLeafRule;
-use achertovsky\RadixTrie\InsertRules\AddLeafFromNodeWithSameLabel;
+use achertovsky\RadixTrie\InsertRules\AddLeafFromNodeWithSameLabelRule;
 
 class Inserter
 {
@@ -24,10 +24,10 @@ class Inserter
         //@todo: add easiest checks at beginning
         $this->rules = [
             // new FirstLeafRule(),
-            new AddLeafFromLeaf(),
+            new AddLeafFromLeafRule(),
             new DontInsertExistingLeafRule(),
             new MatchingNodeAndMatchingLeafRule(),
-            new AddLeafFromNodeWithSameLabel(),
+            new AddLeafFromNodeWithSameLabelRule(),
             new BreakNodeInsertRule(),
         ];
     }
