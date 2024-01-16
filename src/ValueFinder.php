@@ -35,7 +35,7 @@ class ValueFinder
         }
 
         return array_filter(
-            $this->getLeafValuesForPrefix(
+            $this->getLeafValuesByQuery(
                 $lookupNode,
                 $query
             ),
@@ -49,9 +49,9 @@ class ValueFinder
         );
     }
 
-    private function getLeafValuesForPrefix(
+    private function getLeafValuesByQuery(
         Node $node,
-        string $prefix
+        string $query
     ): array {
         if ($node->isLeaf()) {
             return [$node->getLabel()];
@@ -61,16 +61,16 @@ class ValueFinder
         foreach ($node->getEdges() as $edge) {
             if (strpos(
                 $edge->getTargetNode()->getLabel(),
-                $prefix
+                $query
             ) !== 0) {
                 continue;
             }
 
             $output = array_merge(
                 $output,
-                $this->getLeafValuesForPrefix(
+                $this->getLeafValuesByQuery(
                     $edge->getTargetNode(),
-                    $prefix
+                    $query
                 )
             );
         }
