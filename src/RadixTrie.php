@@ -6,9 +6,6 @@ namespace achertovsky\RadixTrie;
 
 use achertovsky\RadixTrie\Entity\Node;
 
-/**
- * @todo optimize the code using benchmark
- */
 class RadixTrie
 {
     private Inserter $inserter;

@@ -9,13 +9,6 @@ use achertovsky\RadixTrie\Entity\Node;
 
 class NodeSearcher
 {
-    private StringHelper $stringHelper;
-
-    public function __construct(
-    ) {
-        $this->stringHelper = new StringHelper();
-    }
-
     public function search(
         Node $rootNode,
         string $query

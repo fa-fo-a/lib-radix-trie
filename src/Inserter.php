@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace achertovsky\RadixTrie;
 
 use achertovsky\RadixTrie\Entity\Node;
-use achertovsky\RadixTrie\InsertRules\BreakNodeInsertRule;
 use achertovsky\RadixTrie\InsertRules\BaseRule;
-use achertovsky\RadixTrie\InsertRules\DontInsertExistingLeafRule;
-use achertovsky\RadixTrie\InsertRules\FirstLeafRule;
 use achertovsky\RadixTrie\InsertRules\AddLeafFromLeafRule;
+use achertovsky\RadixTrie\InsertRules\BreakNodeInsertRule;
+use achertovsky\RadixTrie\InsertRules\DontInsertExistingLeafRule;
 use achertovsky\RadixTrie\InsertRules\MatchingNodeAndMatchingLeafRule;
 use achertovsky\RadixTrie\InsertRules\AddLeafFromNodeWithSameLabelRule;
 

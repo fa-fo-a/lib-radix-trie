@@ -18,7 +18,6 @@ class Node
     public function __construct(
         private string $label
     ) {
-        /** @todo get rid of array */
         $this->edges = [];
     }
 
