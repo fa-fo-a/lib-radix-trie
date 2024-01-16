@@ -6,20 +6,16 @@ namespace achertovsky\RadixTrie\InsertRules;
 
 use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\Entity\Edge;
+use achertovsky\RadixTrie\Entity\InsertMetadata;
 
 class AddLeafFromLeafRule extends BaseRule
 {
     public function supports(
-        Node $node,
-        string $word
+        InsertMetadata $metadata
     ): bool {
         return
-            $node->isLeaf()
-            && strlen($node->getLabel()) !== strlen($word)
-            && strpos(
-                $node->getLabel(),
-                $word
-            ) === false
+            $metadata->isLeaf()
+            && !$metadata->isSameWord()
         ;
     }
 

@@ -5,18 +5,17 @@ declare(strict_types=1);
 namespace achertovsky\RadixTrie\InsertRules;
 
 use achertovsky\RadixTrie\Entity\Node;
-use achertovsky\RadixTrie\Entity\Edge;
+use achertovsky\RadixTrie\Entity\InsertMetadata;
 
 class MatchingNodeAndMatchingLeafRule extends BaseRule
 {
     public function supports(
-        Node $node,
-        string $word
+        InsertMetadata $metadata
     ): bool {
         return
-            $node->getLabel() === $word
-            && !$node->isLeaf()
-            && $this->hasSameLabelLeaf($node)
+            !$metadata->isLeaf()
+            && $metadata->isSameWord()
+            && $metadata->isHasLeafForWord()
         ;
     }
 

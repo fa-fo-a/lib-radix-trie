@@ -6,6 +6,7 @@ namespace achertovsky\RadixTrie\InsertRules;
 
 use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\Entity\Edge;
+use achertovsky\RadixTrie\Entity\InsertMetadata;
 use achertovsky\RadixTrie\StringHelper;
 
 abstract class BaseRule
@@ -18,8 +19,7 @@ abstract class BaseRule
     }
 
     abstract public function supports(
-        Node $node,
-        string $word
+        InsertMetadata $metadata
     ): bool;
 
     abstract public function apply(
@@ -45,7 +45,7 @@ abstract class BaseRule
     }
 
     // @todo: consider misplaced responsibility
-    protected function hasSameLabelLeaf(
+    public function hasSameLabelLeaf(
         Node $node
     ): bool {
         foreach ($node->getEdges() as $edge) {
@@ -55,5 +55,15 @@ abstract class BaseRule
         }
 
         return false;
+    }
+
+    protected function isSameWords(
+        string $firstWord,
+        string $secondWord
+    ): bool {
+        return $this->stringHelper->isSameWords(
+            $firstWord,
+            $secondWord
+        );
     }
 }

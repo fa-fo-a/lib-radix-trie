@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace achertovsky\RadixTrie;
 
+use achertovsky\RadixTrie\Entity\InsertMetadata;
 use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\InsertRules\BaseRule;
 use achertovsky\RadixTrie\InsertRules\AddLeafFromLeafRule;
@@ -23,9 +24,9 @@ class Inserter
         //@todo: add easiest checks at beginning
         $this->rules = [
             new AddLeafFromLeafRule(),
+            new AddLeafFromNodeWithSameLabelRule(),
             new DontInsertExistingLeafRule(),
             new MatchingNodeAndMatchingLeafRule(),
-            new AddLeafFromNodeWithSameLabelRule(),
             new BreakNodeInsertRule(),
         ];
     }
@@ -39,13 +40,22 @@ class Inserter
             $word
         );
 
+        $insertMetadata = new InsertMetadata(
+            /** @todo why with metadata it works slower than without? probably creating instances of closure weights */
+            fn () => $this->rules[0]->hasSameLabelLeaf($closestNode),
+            $closestNode->isLeaf(),
+            (new StringHelper())->isSameWords(
+                $closestNode->getLabel(),
+                $word
+            )
+        );
+
         /**
          * @var BaseRule $rule
          */
         foreach ($this->rules as $rule) {
             if (!$rule->supports(
-                $closestNode,
-                $word
+                $insertMetadata
             )) {
                 continue;
             }

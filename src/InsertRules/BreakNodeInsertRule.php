@@ -7,15 +7,15 @@ namespace achertovsky\RadixTrie\InsertRules;
 use achertovsky\RadixTrie\Entity\BreakRuleMetadata;
 use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\Entity\Edge;
+use achertovsky\RadixTrie\Entity\InsertMetadata;
 
 class BreakNodeInsertRule extends BaseRule
 {
     public function supports(
-        Node $node,
-        string $word
+        InsertMetadata $metadata
     ): bool {
         return
-            !$node->isLeaf()
+            !$metadata->isLeaf()
         ;
     }
 

@@ -32,4 +32,16 @@ class StringHelper
 
         return substr($haystack, strlen($prefix));
     }
+
+    public function isSameWords(
+        string $firstWord,
+        string $secondWord
+    ): bool {
+        return strlen($firstWord) === strlen($secondWord)
+            && strpos(
+                $firstWord,
+                $secondWord
+            ) === 0
+        ;
+    }
 }
