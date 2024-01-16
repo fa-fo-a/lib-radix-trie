@@ -28,7 +28,6 @@ class BreakNodeInsertRule extends BaseRule
             $word
         );
 
-        // @todo currently serves 2 cases
         if ($partialEdgeResult !== null) {
             $node = $this->divideEdge(
                 $node,
@@ -45,8 +44,7 @@ class BreakNodeInsertRule extends BaseRule
 
     private function divideEdge(
         Node $baseNode,
-        BreakRuleMetadata $partialEdgeResult,
-        string $word
+        BreakRuleMetadata $partialEdgeResult
     ): Node {
         $partialEdge = $partialEdgeResult->getEdge();
         $leftLabel = substr($partialEdge->getLabel(), 0, $partialEdgeResult->getLength());
