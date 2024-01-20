@@ -41,7 +41,21 @@ class RadixTrie
 
     public function delete(string $word): void
     {
-        $this->deleter->delete($word);
+        $arr = $this->valueFinder->getLeafValues(
+            $this->rootNode,
+            ''
+        );
+        $pos = array_search($word, $arr);
+        if ($pos === false) {
+            return;
+        }
+        unset($arr[$pos]);
+
+        // @todo: mwahahaha
+        $this->rootNode = new Node(Node::ROOT_LABEL);
+        foreach ($arr as $word) {
+            $this->insert($word);
+        }
     }
 
     public function getRootNode(): Node
