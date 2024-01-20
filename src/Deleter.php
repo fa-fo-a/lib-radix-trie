@@ -18,10 +18,15 @@ class Deleter
         string $word
     ): void
     {
+        // '' => (test) => 'test'
+        $partialWord = substr($word, 0, -1);
         $closestNode = $this->nodeSearcher->search(
             $rootNode,
-            $word
+            $partialWord
         );
+        // get partial matching edge
+        // check if found edge matches searched word
+        // remove edge from closesNode if target Node is leaf
 
         //@todo: no pointer to prior node
     }
