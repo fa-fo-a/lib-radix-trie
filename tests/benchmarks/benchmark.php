@@ -41,9 +41,23 @@ echo sprintf(
     (memory_get_usage() - $start_memory)/1024
 )."\n";
 
+$serializeStart = microtime(true);
+$trieData = serialize($trie->getRootNode());
+$serializeEnd = microtime(true);
+
+file_put_contents('temp', $trieData);
+
+$deserializeStart = microtime(true);
+new RadixTrie(unserialize($trieData));
+$deserializeEnd = microtime(true);
+
 echo sprintf(
-    "Insert takes %s (s.ms)\nSearch all words takes %s (s.ms)\nSearch single word takes %s (s.ms)",
+    "Insert takes %s (s.ms)\nSearch all words takes %s (s.ms)\nSearch single word takes %s (s.ms)\n"
+    . "Serialize %s (s.ms)\n"
+    . "Deserialize %s (s.ms)\n",
     sprintf("%.020f", $insertEnd - $insertStart),
     sprintf("%.020f", $findAllEnd - $findAllStart),
     sprintf("%.020f", $findOneWordAllEnd - $findOneWordAllStart),
+    sprintf("%.020f", $serializeEnd - $serializeStart),
+    sprintf("%.020f", $deserializeEnd - $deserializeStart),
 )."\n";

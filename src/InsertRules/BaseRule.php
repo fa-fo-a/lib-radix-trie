@@ -27,7 +27,6 @@ abstract class BaseRule
         string $word
     ): void;
 
-    // @todo: consider misplaced responsibility
     protected function addNewEdge(
         Node $baseNode,
         string $word
@@ -42,28 +41,5 @@ abstract class BaseRule
         );
 
         $baseNode->addEdge($edge);
-    }
-
-    // @todo: consider misplaced responsibility
-    public function hasSameLabelLeaf(
-        Node $node
-    ): bool {
-        foreach ($node->getEdges() as $edge) {
-            if ($node->getLabel() === $edge->getTargetNode()->getLabel()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    protected function isSameWords(
-        string $firstWord,
-        string $secondWord
-    ): bool {
-        return $this->stringHelper->isSameWords(
-            $firstWord,
-            $secondWord
-        );
     }
 }

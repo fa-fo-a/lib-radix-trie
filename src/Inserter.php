@@ -17,11 +17,12 @@ class Inserter
 {
     private NodeSearcher $nodeSearcher;
     private array $rules;
+    private InsertMetadata $insertMetadata;
+    private StringHelper $stringHelper;
 
     public function __construct(
     ) {
         $this->nodeSearcher = new NodeSearcher();
-        //@todo: add easiest checks at beginning
         $this->rules = [
             new AddLeafFromLeafRule(),
             new AddLeafFromNodeWithSameLabelRule(),
@@ -29,6 +30,21 @@ class Inserter
             new MatchingNodeAndMatchingLeafRule(),
             new BreakNodeInsertRule(),
         ];
+        $this->insertMetadata = new InsertMetadata(
+            function (Node $node) {
+                foreach ($node->getEdges() as $edge) {
+                    if (strlen($edge->getLabel()) === 0) {
+                        return true;
+                    }
+                }
+
+                return false;
+            },
+            false,
+            false,
+            null
+        );
+        $this->stringHelper = new StringHelper();
     }
 
     public function insert(
@@ -40,22 +56,25 @@ class Inserter
             $word
         );
 
-        $insertMetadata = new InsertMetadata(
-            /** @todo why with metadata it works slower than without? probably creating instances of closure weights */
-            fn () => $this->rules[0]->hasSameLabelLeaf($closestNode),
-            $closestNode->isLeaf(),
-            (new StringHelper())->isSameWords(
-                $closestNode->getLabel(),
-                $word
+        $this->insertMetadata->clean();
+        $this->insertMetadata
+            ->setNode($closestNode)
+            ->setLeaf($closestNode->isLeaf())
+            ->setSameWord(
+                $this->stringHelper
+                    ->isSameWords(
+                        $closestNode->getLabel(),
+                        $word
+                    )
             )
-        );
+        ;
 
         /**
          * @var BaseRule $rule
          */
         foreach ($this->rules as $rule) {
             if (!$rule->supports(
-                $insertMetadata
+                $this->insertMetadata
             )) {
                 continue;
             }

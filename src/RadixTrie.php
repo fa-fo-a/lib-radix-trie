@@ -36,4 +36,9 @@ class RadixTrie
             $word
         );
     }
+
+    public function getRootNode(): Node
+    {
+        return $this->rootNode;
+    }
 }
