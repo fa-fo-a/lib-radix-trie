@@ -10,12 +10,14 @@ class RadixTrie
 {
     private Inserter $inserter;
     private ValueFinder $valueFinder;
+    private Deleter $deleter;
 
     public function __construct(
         private Node $rootNode = new Node(Node::ROOT_LABEL)
     ) {
         $this->inserter = new Inserter();
         $this->valueFinder = new ValueFinder();
+        $this->deleter = new Deleter();
     }
 
     /**
@@ -35,6 +37,11 @@ class RadixTrie
             $this->rootNode,
             $word
         );
+    }
+
+    public function delete(string $word): void
+    {
+        $this->deleter->delete($word);
     }
 
     public function getRootNode(): Node

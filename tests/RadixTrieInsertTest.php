@@ -9,53 +9,8 @@ use achertovsky\RadixTrie\RadixTrie;
 use achertovsky\RadixTrie\Entity\Edge;
 use achertovsky\RadixTrie\Tests\BaseTestCase;
 
-class RadixTrieTest extends BaseTestCase
+class RadixTrieInsertTest extends BaseTestCase
 {
-    public function testSearchWorksGood(): void
-    {
-        // '' => (test) => test => (er) => tester
-        //                      => () => test
-        $rootNode = new Node(Node::ROOT_LABEL);
-        $trie = new RadixTrie(
-            $rootNode
-        );
-        $testLeaf = new Node('test');
-        $testLeafsEdge = new Edge('', $testLeaf);
-        $testerLeaf = new Node('tester');
-        $testerLeafsEdge = new Edge('er', $testerLeaf);
-        $testNode = new Node('test');
-        $testEdge = new Edge('test', $testNode);
-        $testNode->addEdge($testLeafsEdge);
-        $testNode->addEdge($testerLeafsEdge);
-        $rootNode->addEdge($testEdge);
-
-        $this->assertArraysHaveEqualDataset(
-            [
-                'test',
-                'tester',
-            ],
-            $trie->find('t'),
-            'finds value for just t, so all leafs'
-        );
-
-        $this->assertArraysHaveEqualDataset(
-            [
-                'test',
-                'tester',
-            ],
-            $trie->find('test'),
-            'finds leafs by test query'
-        );
-
-        $this->assertArraysHaveEqualDataset(
-            [
-                'tester',
-            ],
-            $trie->find('tester'),
-            'finds single leaf by tester query'
-        );
-    }
-
     public function testSingleValueInsertWouldInsert(): void
     {
         $trie = new RadixTrie(
@@ -221,39 +176,4 @@ class RadixTrieTest extends BaseTestCase
         );
     }
 
-    public function testPartialSearch(): void
-    {
-        $trie = new RadixTrie(
-            new Node(Node::ROOT_LABEL)
-        );
-
-        $trie->insert('tester');
-        $trie->insert('test');
-        $trie->insert('to');
-
-        $this->assertArraysHaveEqualDataset(
-            [
-                'tester',
-            ],
-            $trie->find('teste'),
-            'finds tester partial edge'
-        );
-    }
-
-    public function testEmptyTryFindWouldReturnNone(): void
-    {
-        $trie = new RadixTrie(
-            new Node(Node::ROOT_LABEL)
-        );
-
-        $this->assertEquals(
-            [],
-            $trie->find('')
-        );
-
-        $this->assertEquals(
-            [],
-            $trie->find('whatever')
-        );
-    }
 }
