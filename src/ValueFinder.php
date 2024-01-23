@@ -10,7 +10,7 @@ use achertovsky\RadixTrie\Entity\Node;
 class ValueFinder
 {
     private NodeSearcher $nodeSearcher;
-    private StringHelper $stringHelper;
+    private StringHelper $stringHelper;// @todo not used
 
     public function __construct()
     {
@@ -31,7 +31,7 @@ class ValueFinder
             $query
         );
         if ($lookupNode === null) {
-            return $output;
+            return $output; //@todo not covered
         }
 
         return array_filter(

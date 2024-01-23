@@ -120,9 +120,16 @@ class RadixTrieDeleteTest extends BaseTestCase
                 true
             )
         );
+
+        $this->assertEquals(
+            [
+                'test'
+            ],
+            $trie->find('test')
+        );
     }
 
-    public function testWillDeleteOneOfLeafsAndCollapseIntermediaryNode(): void
+    public function testWillDeleteOneOfLeafsAndCollapseIntermediaryNodeWhichGrowsFromRoot(): void
     {
         $expectedResult = new RadixTrie(
             new Node(Node::ROOT_LABEL)
@@ -146,6 +153,91 @@ class RadixTrieDeleteTest extends BaseTestCase
                 $trie->getRootNode(),
                 JSON_PRETTY_PRINT
             )
+        );
+
+        $this->assertEquals(
+            [
+                'testing'
+            ],
+            $trie->find('test')
+        );
+    }
+
+    public function testWillDeleteOneOfLeafsAndCollapseIntermediaryNode(): void
+    {
+        $expectedResult = new RadixTrie(
+            new Node(Node::ROOT_LABEL)
+        );
+        $expectedResult->insert('t');
+        $expectedResult->insert('testing');
+
+        $trie = new RadixTrie(
+            new Node(Node::ROOT_LABEL)
+        );
+        $trie->insert('t');
+        $trie->insert('testing');
+        $trie->insert('tester');
+
+        $trie->delete('tester');
+
+        $this->assertEquals(
+            json_encode(
+                $expectedResult->getRootNode(),
+                JSON_PRETTY_PRINT
+            ),
+            json_encode(
+                $trie->getRootNode(),
+                JSON_PRETTY_PRINT
+            )
+        );
+
+        $this->assertEquals(
+            [
+                'testing'
+            ],
+            $trie->find('test')
+        );
+    }
+
+    public function testDeleteFirstIntermediaryNode(): void
+    {
+        $expectedResultTrie = new RadixTrie(
+            new Node(Node::ROOT_LABEL)
+        );
+        $expectedResultTrie->insert('test');
+        $expectedResultTrie->insert('testing');
+        $expectedResultTrie->insert('tester');
+
+        $trie = new RadixTrie(
+            new Node(Node::ROOT_LABEL)
+        );
+        $trie->insert('t');
+        $trie->insert('test');
+        $trie->insert('testing');
+        $trie->insert('tester');
+
+        $trie->delete('t');
+
+        $this->assertEquals(
+            json_encode(
+                $expectedResultTrie->getRootNode(),
+                JSON_PRETTY_PRINT
+            ),
+            json_encode(
+                $trie->getRootNode(),
+                JSON_PRETTY_PRINT
+            )
+        );
+
+        $expectedResult = [
+            'test',
+            'tester',
+            'testing',
+        ];
+        $actualResult = $trie->find('test');
+        $this->assertEquals(
+            sort($expectedResult),
+            sort($actualResult)
         );
     }
 }

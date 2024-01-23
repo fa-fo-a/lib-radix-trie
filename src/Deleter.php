@@ -7,13 +7,16 @@ namespace achertovsky\RadixTrie;
 use achertovsky\RadixTrie\Entity\Edge;
 use achertovsky\RadixTrie\Entity\Node;
 
+// @todo pretty that ugly bastard
 class Deleter
 {
     private NodeSearcher $nodeSearcher;
+    private StringHelper $stringHelper;
 
     public function __construct()
     {
         $this->nodeSearcher = new NodeSearcher();
+        $this->stringHelper = new StringHelper();
     }
 
     public function delete(
@@ -26,7 +29,7 @@ class Deleter
         );
 
         if ($closestNode === null) {
-            return;
+            return; // @todo uncovered
         }
 
         $edgeToWorkOn = null;
@@ -50,6 +53,7 @@ class Deleter
                 $closestNode->removeEdge($closestNode->getEdgeToLeaf());
             }
 
+            // check if closest node has only one edge which is not leaf
             if (!$closestNode->getEdgeToLeaf() && count($closestNode->getEdges()) === 1) {
                 $edges = $closestNode->getEdges();
                 $leftoverNode = reset($edges)->getTargetNode();
@@ -65,11 +69,10 @@ class Deleter
                 }
                 $closestNodeToClosestNode->addEdge(
                     new Edge(
-                        $leftoverNode->getLabel(),
+                        $this->stringHelper->getSuffix($closestNodeToClosestNode->getLabel(), $leftoverNode->getLabel()),
                         $leftoverNode
                     )
                 );
-                // @todo it could be broken if we wont work from root node. just copy-paste test and add "t" word into it
             }
 
             return;
