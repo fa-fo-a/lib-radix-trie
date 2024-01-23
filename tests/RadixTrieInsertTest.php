@@ -6,9 +6,9 @@ namespace achertovsky\RadixTrie\Tests;
 
 use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\RadixTrie;
-use achertovsky\RadixTrie\Entity\Edge;
 use achertovsky\RadixTrie\Tests\BaseTestCase;
 
+/** @todo test why trie with added 1 word has leaf with empty edge and node */
 class RadixTrieInsertTest extends BaseTestCase
 {
     public function testSingleValueInsertWouldInsert(): void

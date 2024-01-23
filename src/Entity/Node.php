@@ -45,4 +45,13 @@ class Node
     {
         return $this->edges === [];
     }
+
+    public function removeEdge(Edge $edge): void
+    {
+        $key = array_search($edge, $this->edges);
+        if ($key === false) {
+            return;
+        }
+        unset($this->edges[$key]);
+    }
 }
