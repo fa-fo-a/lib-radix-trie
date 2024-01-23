@@ -45,8 +45,6 @@ $serializeStart = microtime(true);
 $trieData = serialize($trie->getRootNode());
 $serializeEnd = microtime(true);
 
-file_put_contents('temp', $trieData);
-
 $deserializeStart = microtime(true);
 new RadixTrie(unserialize($trieData));
 $deserializeEnd = microtime(true);

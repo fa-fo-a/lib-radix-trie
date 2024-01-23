@@ -41,4 +41,110 @@ class RadixTrieDeleteTest extends BaseTestCase
             $trie->find('test')
         );
     }
+
+    public function testWillNotDeleteAsNoMatchingNode(): void
+    {
+        $rootNode = new Node(Node::ROOT_LABEL);
+        $trie = new RadixTrie(
+            $rootNode
+        );
+        $trie->insert('test');
+
+        $trie->delete('t');
+        $this->assertEquals(
+            ['test'],
+            $trie->find('test')
+        );
+    }
+
+    public function testWontDeleteIntermediaryNode(): void
+    {
+        $rootNode = new Node(Node::ROOT_LABEL);
+        $trie = new RadixTrie(
+            $rootNode
+        );
+        $trie->insert('testing');
+        $trie->insert('tester');
+
+        $trie->delete('test');
+        $this->assertEquals(
+            [
+                'testing',
+                'tester',
+            ],
+            $trie->find('test')
+        );
+    }
+
+    public function testWillDeleteIntermediaryNodesLeaf(): void
+    {
+        $rootNode = new Node(Node::ROOT_LABEL);
+        $trie = new RadixTrie(
+            $rootNode
+        );
+        $trie->insert('testing');
+        $trie->insert('tester');
+        $trie->insert('test');
+
+        $trie->delete('test');
+        $this->assertEquals(
+            [
+                'testing',
+                'tester',
+            ],
+            $trie->find('test')
+        );
+    }
+
+    public function testWillDeleteLeafAndTransformIntermediaryNodeToLeaf(): void
+    {
+        $expectedResult = new RadixTrie(
+            new Node(Node::ROOT_LABEL)
+        );
+        $expectedResult->insert('test');
+
+        $trie = new RadixTrie(
+            new Node(Node::ROOT_LABEL)
+        );
+        $trie->insert('test');
+        $trie->insert('tester');
+
+        $trie->delete('tester');
+        $this->assertEquals(
+            var_export(
+                $expectedResult->getRootNode(),
+                true
+            ),
+            var_export(
+                $trie->getRootNode(),
+                true
+            )
+        );
+    }
+
+    public function testWillDeleteOneOfLeafsAndCollapseIntermediaryNode(): void
+    {
+        $expectedResult = new RadixTrie(
+            new Node(Node::ROOT_LABEL)
+        );
+        $expectedResult->insert('testing');
+
+        $trie = new RadixTrie(
+            new Node(Node::ROOT_LABEL)
+        );
+        $trie->insert('testing');
+        $trie->insert('tester');
+
+        $trie->delete('tester');
+        $this->assertEquals(
+            var_export(
+                $expectedResult->getRootNode(),
+                true
+            ),
+            var_export(
+                $trie->getRootNode(),
+                true
+            )
+        );
+    }
 }

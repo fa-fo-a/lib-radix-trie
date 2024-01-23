@@ -32,13 +32,7 @@ class Inserter
         ];
         $this->insertMetadata = new InsertMetadata(
             function (Node $node) {
-                foreach ($node->getEdges() as $edge) {
-                    if (strlen($edge->getLabel()) === 0) {
-                        return true;
-                    }
-                }
-
-                return false;
+                return $node->getEdgeToLeaf() !== null;
             },
             false,
             false,

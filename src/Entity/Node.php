@@ -54,4 +54,15 @@ class Node
         }
         unset($this->edges[$key]);
     }
+
+    public function getEdgeToLeaf(): ?Edge
+    {
+        foreach ($this->getEdges() as $edge) {
+            if (strlen($edge->getLabel()) === 0) {
+                return $edge;
+            }
+        }
+
+        return null;
+    }
 }
