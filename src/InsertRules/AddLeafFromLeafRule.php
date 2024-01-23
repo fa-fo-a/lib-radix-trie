@@ -36,6 +36,9 @@ class AddLeafFromLeafRule extends BaseRule
     private function preserveLeaf(
         Node $baseNode
     ): void {
+        if (strlen($baseNode->getLabel()) === 0) {
+            return;
+        }
         $node = new Node($baseNode->getLabel());
         $edge = new Edge(
             "",

@@ -136,14 +136,15 @@ class RadixTrieDeleteTest extends BaseTestCase
         $trie->insert('tester');
 
         $trie->delete('tester');
+
         $this->assertEquals(
-            var_export(
+            json_encode(
                 $expectedResult->getRootNode(),
-                true
+                JSON_PRETTY_PRINT
             ),
-            var_export(
+            json_encode(
                 $trie->getRootNode(),
-                true
+                JSON_PRETTY_PRINT
             )
         );
     }

@@ -51,7 +51,8 @@ class Deleter
             }
 
             if (!$closestNode->getEdgeToLeaf() && count($closestNode->getEdges()) === 1) {
-                $leftoverNode = reset($closestNode->getEdges())->getTargetNode();
+                $edges = $closestNode->getEdges();
+                $leftoverNode = reset($edges)->getTargetNode();
                 $closestNodeToClosestNode = $this->findClosestNode(
                     $rootNode,
                     $closestNode->getLabel()
