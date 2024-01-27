@@ -12,7 +12,7 @@ class NodeSearcher
     public function search(
         Node $rootNode,
         string $query
-    ): ?Node {
+    ): Node {
         $currentNode = $rootNode;
         $currentLabel = $query;
 

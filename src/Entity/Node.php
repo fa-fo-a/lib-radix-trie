@@ -53,6 +53,7 @@ class Node
             return;
         }
         unset($this->edges[$key]);
+        $this->edges = array_values($this->edges);
     }
 
     public function getEdgeToLeaf(): ?Edge

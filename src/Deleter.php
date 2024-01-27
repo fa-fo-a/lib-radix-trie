@@ -46,8 +46,14 @@ class Deleter
         }
 
         // if edge we found targets node which is leaf - just remove it
+        //        $trie->insert('t');
+        //        $trie->insert('testing');
+        //        $trie->insert('tester');
+        // '' => (t) => t => (est) => test => (ing) => testing
         if ($edgeToWorkOn->getTargetNode()->isLeaf()) {
             $closestNode->removeEdge($edgeToWorkOn);
+
+            //
             //check if closest node has only one edge which leaf
             if ($closestNode->getEdgeToLeaf() && count($closestNode->getEdges()) === 1) {
                 $closestNode->removeEdge($closestNode->getEdgeToLeaf());

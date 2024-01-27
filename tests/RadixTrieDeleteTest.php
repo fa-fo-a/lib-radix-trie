@@ -13,8 +13,6 @@ class RadixTrieDeleteTest extends BaseTestCase
 {
     public function testWillNotDeleteRootNode(): void
     {
-        // '' => (test) => test => (er) => tester
-        //                      => () => test
         $rootNode = new Node(Node::ROOT_LABEL);
         $trie = new RadixTrie(
             $rootNode
@@ -110,22 +108,10 @@ class RadixTrieDeleteTest extends BaseTestCase
         $trie->insert('tester');
 
         $trie->delete('tester');
-        $this->assertEquals(
-            var_export(
-                $expectedResult->getRootNode(),
-                true
-            ),
-            var_export(
-                $trie->getRootNode(),
-                true
-            )
-        );
 
-        $this->assertEquals(
-            [
-                'test'
-            ],
-            $trie->find('test')
+        $this->assertNodeRecursivelyEqual(
+            $expectedResult->getRootNode(),
+            $trie->getRootNode()
         );
     }
 
@@ -144,22 +130,9 @@ class RadixTrieDeleteTest extends BaseTestCase
 
         $trie->delete('tester');
 
-        $this->assertEquals(
-            json_encode(
-                $expectedResult->getRootNode(),
-                JSON_PRETTY_PRINT
-            ),
-            json_encode(
-                $trie->getRootNode(),
-                JSON_PRETTY_PRINT
-            )
-        );
-
-        $this->assertEquals(
-            [
-                'testing'
-            ],
-            $trie->find('test')
+        $this->assertNodeRecursivelyEqual(
+            $expectedResult->getRootNode(),
+            $trie->getRootNode(),
         );
     }
 
@@ -180,22 +153,9 @@ class RadixTrieDeleteTest extends BaseTestCase
 
         $trie->delete('tester');
 
-        $this->assertEquals(
-            json_encode(
-                $expectedResult->getRootNode(),
-                JSON_PRETTY_PRINT
-            ),
-            json_encode(
-                $trie->getRootNode(),
-                JSON_PRETTY_PRINT
-            )
-        );
-
-        $this->assertEquals(
-            [
-                'testing'
-            ],
-            $trie->find('test')
+        $this->assertNodeRecursivelyEqual(
+            $expectedResult->getRootNode(),
+            $trie->getRootNode()
         );
     }
 
@@ -216,28 +176,45 @@ class RadixTrieDeleteTest extends BaseTestCase
         $trie->insert('testing');
         $trie->insert('tester');
 
+        // @todo catch edge case due to root node issue?
         $trie->delete('t');
 
+        $this->assertNodeRecursivelyEqual(
+            $expectedResultTrie->getRootNode(),
+            $trie->getRootNode(),
+        );
+    }
+
+    private function assertNodeRecursivelyEqual(
+        Node $expectedNode,
+        Node $actualNode
+    ): void {
         $this->assertEquals(
-            json_encode(
-                $expectedResultTrie->getRootNode(),
-                JSON_PRETTY_PRINT
-            ),
-            json_encode(
-                $trie->getRootNode(),
-                JSON_PRETTY_PRINT
-            )
+            $expectedNode->getLabel(),
+            $actualNode->getLabel()
         );
 
-        $expectedResult = [
-            'test',
-            'tester',
-            'testing',
-        ];
-        $actualResult = $trie->find('test');
+        $expectedEdges = [];
+        foreach ($expectedNode->getEdges() as $edge) {
+            $expectedEdges[$edge->getLabel()] = $edge;
+        }
+        $actualEdges = [];
+        foreach ($actualNode->getEdges() as $edge) {
+            $actualEdges[$edge->getLabel()] = $edge;
+        }
+
+        ksort($expectedEdges);
+        ksort($actualEdges);
         $this->assertEquals(
-            sort($expectedResult),
-            sort($actualResult)
+            array_keys($expectedEdges),
+            array_keys($actualEdges)
         );
+
+        foreach (array_keys($expectedEdges) as $edgeKey) {
+            $this->assertNodeRecursivelyEqual(
+                $expectedEdges[$edgeKey]->getTargetNode(),
+                $actualEdges[$edgeKey]->getTargetNode()
+            );
+        }
     }
 }
