@@ -217,4 +217,8 @@ class RadixTrieDeleteTest extends BaseTestCase
             );
         }
     }
+
+    // @todo stress test for delete
+    // create trie for 100 words, delete random 5 words
+    // recursively test that trie without those words is equal to one after removal
 }

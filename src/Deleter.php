@@ -90,18 +90,6 @@ class Deleter
             $edgeToWorkOn->getTargetNode()->removeEdge($edgeToLeaf);
             return;
         }
-
-        // // if intermediary node has only leaf - remove leaf
-        // if (count($edgeToWorkOn->getTargetNode()->getEdges()) === 1) {
-        //     $closestNode->removeEdge($edgeToWorkOn);
-        //     return;
-        // }
-
-        // get partial matching edge
-        // check if found edge matches searched word
-        // remove edge from closesNode if target Node is leaf
-
-        //@todo: no pointer to prior node
     }
 
     private function findClosestNode(
