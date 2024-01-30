@@ -53,33 +53,11 @@ class Deleter
         if ($edgeToWorkOn->getTargetNode()->isLeaf()) {
             $closestNode->removeEdge($edgeToWorkOn);
 
-            //
-            //check if closest node has only one edge which leaf
-            if ($closestNode->getEdgeToLeaf() && count($closestNode->getEdges()) === 1) {
-                $closestNode->removeEdge($closestNode->getEdgeToLeaf());
-            }
-
             // check if closest node has only one edge which is not leaf
-            if (!$closestNode->getEdgeToLeaf() && count($closestNode->getEdges()) === 1) {
-                $edges = $closestNode->getEdges();
-                $leftoverNode = reset($edges)->getTargetNode();
-                $closestNodeToClosestNode = $this->findClosestNode(
-                    $rootNode,
-                    $closestNode->getLabel()
-                );
-                foreach ($closestNodeToClosestNode->getEdges() as $edge) {
-                    if ($edge->getTargetNode() === $closestNode) {
-                        $closestNodeToClosestNode->removeEdge($edge);
-                        break;
-                    }
-                }
-                $closestNodeToClosestNode->addEdge(
-                    new Edge(
-                        $this->stringHelper->getSuffix($closestNodeToClosestNode->getLabel(), $leftoverNode->getLabel()),
-                        $leftoverNode
-                    )
-                );
-            }
+            $this->getRidOfUnnecessaryNode(
+                $rootNode,
+                $closestNode
+            );
 
             return;
         }
@@ -88,7 +66,43 @@ class Deleter
         $edgeToLeaf = $edgeToWorkOn->getTargetNode()->getEdgeToLeaf();
         if ($edgeToLeaf !== null) {
             $edgeToWorkOn->getTargetNode()->removeEdge($edgeToLeaf);
+
+            $this->getRidOfUnnecessaryNode(
+                $rootNode,
+                $edgeToWorkOn->getTargetNode()
+            );
+
             return;
+        }
+    }
+
+    private function getRidOfUnnecessaryNode(
+        Node $rootNode,
+        Node $closestNode
+    ): void {
+        if ($closestNode === $rootNode) {
+            return;
+        }
+
+        if (count($closestNode->getEdges()) === 1) {
+            $edges = $closestNode->getEdges();
+            $leftoverNode = reset($edges)->getTargetNode();
+            $closestNodeToClosestNode = $this->findClosestNode(
+                $rootNode,
+                $closestNode->getLabel()
+            );
+            foreach ($closestNodeToClosestNode->getEdges() as $edge) {
+                if ($edge->getTargetNode() === $closestNode) {
+                    $closestNodeToClosestNode->removeEdge($edge);
+                    break;
+                }
+            }
+            $closestNodeToClosestNode->addEdge(
+                new Edge(
+                    $this->stringHelper->getSuffix($closestNodeToClosestNode->getLabel(), $leftoverNode->getLabel()),
+                    $leftoverNode
+                )
+            );
         }
     }
 

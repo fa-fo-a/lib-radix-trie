@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace achertovsky\RadixTrie\Tests;
 
-use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\RadixTrie;
-use achertovsky\RadixTrie\Entity\Edge;
+use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\Tests\BaseTestCase;
 
 class RadixTrieDeleteTest extends BaseTestCase
@@ -38,6 +37,11 @@ class RadixTrieDeleteTest extends BaseTestCase
             [],
             $trie->find('test')
         );
+
+        $this->assertNodeRecursivelyEqual(
+            new Node(Node::ROOT_LABEL),
+            $trie->getRootNode()
+        );
     }
 
     public function testWillNotDeleteAsNoMatchingNode(): void
@@ -57,6 +61,12 @@ class RadixTrieDeleteTest extends BaseTestCase
 
     public function testWontDeleteIntermediaryNode(): void
     {
+        $expectedResult = new RadixTrie(
+            new Node(Node::ROOT_LABEL)
+        );
+        $expectedResult->insert('testing');
+        $expectedResult->insert('tester');
+
         $rootNode = new Node(Node::ROOT_LABEL);
         $trie = new RadixTrie(
             $rootNode
@@ -72,10 +82,21 @@ class RadixTrieDeleteTest extends BaseTestCase
             ],
             $trie->find('test')
         );
+
+        $this->assertNodeRecursivelyEqual(
+            $expectedResult->getRootNode(),
+            $trie->getRootNode()
+        );
     }
 
     public function testWillDeleteIntermediaryNodesLeaf(): void
     {
+        $expectedResult = new RadixTrie(
+            new Node(Node::ROOT_LABEL)
+        );
+        $expectedResult->insert('testing');
+        $expectedResult->insert('tester');
+
         $rootNode = new Node(Node::ROOT_LABEL);
         $trie = new RadixTrie(
             $rootNode
@@ -91,6 +112,11 @@ class RadixTrieDeleteTest extends BaseTestCase
                 'tester',
             ],
             $trie->find('test')
+        );
+
+        $this->assertNodeRecursivelyEqual(
+            $expectedResult->getRootNode(),
+            $trie->getRootNode()
         );
     }
 
@@ -176,11 +202,27 @@ class RadixTrieDeleteTest extends BaseTestCase
         $trie->insert('testing');
         $trie->insert('tester');
 
-        // @todo catch edge case due to root node issue?
         $trie->delete('t');
 
         $this->assertNodeRecursivelyEqual(
             $expectedResultTrie->getRootNode(),
+            $trie->getRootNode(),
+        );
+    }
+
+    public function testDeleteTwoLeafsOfRoot(): void
+    {
+        $trie = new RadixTrie(
+            new Node(Node::ROOT_LABEL)
+        );
+        $trie->insert('test');
+        $trie->insert('west');
+
+        $trie->delete('test');
+        $trie->delete('west');
+
+        $this->assertNodeRecursivelyEqual(
+            new Node(Node::ROOT_LABEL),
             $trie->getRootNode(),
         );
     }
@@ -217,8 +259,4 @@ class RadixTrieDeleteTest extends BaseTestCase
             );
         }
     }
-
-    // @todo stress test for delete
-    // create trie for 100 words, delete random 5 words
-    // recursively test that trie without those words is equal to one after removal
 }

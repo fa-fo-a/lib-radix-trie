@@ -8,7 +8,7 @@ use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\RadixTrie;
 use achertovsky\RadixTrie\Tests\BaseTestCase;
 
-class StresstestTest extends BaseTestCase
+class InsertStresstestTest extends BaseTestCase
 {
     private const ARBITRARY_AMOUNT_OF_WORDS_FOR_STRESSTEST = 2000;
 
