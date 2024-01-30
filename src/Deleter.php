@@ -7,7 +7,6 @@ namespace achertovsky\RadixTrie;
 use achertovsky\RadixTrie\Entity\Edge;
 use achertovsky\RadixTrie\Entity\Node;
 
-// @todo pretty that ugly bastard
 class Deleter
 {
     private NodeSearcher $nodeSearcher;
@@ -23,93 +22,50 @@ class Deleter
         Node $rootNode,
         string $word
     ): void {
-        $closestNode = $this->findClosestNode(
+        $closestNode = $this->findParentForNodePossiblyContainingWord(
             $rootNode,
             $word
         );
 
-        if ($closestNode === null) {
-            return; // @todo uncovered
-        }
-
-        $edgeToWorkOn = null;
+        $edgeThatTargetsWord = null;
         foreach ($closestNode->getEdges() as $edge) {
             if (
                 $edge->getTargetNode()->getLabel() === $word
             ) {
-                $edgeToWorkOn = $edge;
+                $edgeThatTargetsWord = $edge;
                 break;
             }
         }
-        if ($edgeToWorkOn === null) {
+        if ($edgeThatTargetsWord === null) {
             return;
         }
 
-        // if edge we found targets node which is leaf - just remove it
-        //        $trie->insert('t');
-        //        $trie->insert('testing');
-        //        $trie->insert('tester');
-        // '' => (t) => t => (est) => test => (ing) => testing
-        if ($edgeToWorkOn->getTargetNode()->isLeaf()) {
-            $closestNode->removeEdge($edgeToWorkOn);
+        $nodeToWorkOn = null;
+        $edgeToRemove = null;
+        if ($edgeThatTargetsWord->getTargetNode()->isLeaf()) {
+            $nodeToWorkOn = $closestNode;
+            $edgeToRemove = $edgeThatTargetsWord;
+        } elseif ($edgeThatTargetsWord->getTargetNode()->getEdgeToLeaf()) {
+            $nodeToWorkOn = $edgeThatTargetsWord->getTargetNode();
+            $edgeToRemove = $edgeThatTargetsWord->getTargetNode()->getEdgeToLeaf();
+        }
 
-            // check if closest node has only one edge which is not leaf
-            $this->getRidOfUnnecessaryNode(
-                $rootNode,
-                $closestNode
-            );
-
+        if ($nodeToWorkOn === null) {
             return;
         }
 
-        // if edge is intermediary node check if it has edge to leaf
-        $edgeToLeaf = $edgeToWorkOn->getTargetNode()->getEdgeToLeaf();
-        if ($edgeToLeaf !== null) {
-            $edgeToWorkOn->getTargetNode()->removeEdge($edgeToLeaf);
+        $nodeToWorkOn->removeEdge($edgeToRemove);
 
-            $this->getRidOfUnnecessaryNode(
-                $rootNode,
-                $edgeToWorkOn->getTargetNode()
-            );
-
-            return;
-        }
+        $this->collapseRedundantNode(
+            $rootNode,
+            $nodeToWorkOn
+        );
     }
 
-    private function getRidOfUnnecessaryNode(
-        Node $rootNode,
-        Node $closestNode
-    ): void {
-        if ($closestNode === $rootNode) {
-            return;
-        }
-
-        if (count($closestNode->getEdges()) === 1) {
-            $edges = $closestNode->getEdges();
-            $leftoverNode = reset($edges)->getTargetNode();
-            $closestNodeToClosestNode = $this->findClosestNode(
-                $rootNode,
-                $closestNode->getLabel()
-            );
-            foreach ($closestNodeToClosestNode->getEdges() as $edge) {
-                if ($edge->getTargetNode() === $closestNode) {
-                    $closestNodeToClosestNode->removeEdge($edge);
-                    break;
-                }
-            }
-            $closestNodeToClosestNode->addEdge(
-                new Edge(
-                    $this->stringHelper->getSuffix($closestNodeToClosestNode->getLabel(), $leftoverNode->getLabel()),
-                    $leftoverNode
-                )
-            );
-        }
-    }
-
-    private function findClosestNode(
+    private function findParentForNodePossiblyContainingWord(
         Node $rootNode,
         string $word
-    ): ?Node {
+    ): Node {
         $partialWord = substr(
             $word,
             0,
@@ -118,6 +74,62 @@ class Deleter
         return $this->nodeSearcher->search(
             $rootNode,
             $partialWord
+        );
+    }
+
+    private function collapseRedundantNode(
+        Node $rootNode,
+        Node $possiblyRedundantNode
+    ): void {
+        if (
+            $possiblyRedundantNode === $rootNode
+            || count($possiblyRedundantNode->getEdges()) > 1
+        ) {
+            return;
+        }
+
+        $edges = $possiblyRedundantNode->getEdges();
+        $leftoverNode = reset($edges)->getTargetNode();
+        $redundantNodeParent = $this->findParentForNodePossiblyContainingWord(
+            $rootNode,
+            $possiblyRedundantNode->getLabel()
+        );
+
+        $this->removeRedundantIntermediaryNode(
+            $redundantNodeParent,
+            $possiblyRedundantNode
+        );
+
+        $this->addLeftoverNodeStraightToParent(
+            $redundantNodeParent,
+            $leftoverNode
+        );
+    }
+
+    private function removeRedundantIntermediaryNode(
+        Node $redundantNodeParent,
+        Node $redundantNode
+    ): void {
+        foreach ($redundantNodeParent->getEdges() as $edge) {
+            if ($edge->getTargetNode() === $redundantNode) {
+                $redundantNodeParent->removeEdge($edge);
+                break;
+            }
+        }
+    }
+
+    private function addLeftoverNodeStraightToParent(
+        Node $redundantNodeParent,
+        Node $leftoverNode
+    ): void {
+        $redundantNodeParent->addEdge(
+            new Edge(
+                $this->stringHelper->getSuffix(
+                    $redundantNodeParent->getLabel(),
+                    $leftoverNode->getLabel()
+                ),
+                $leftoverNode
+            )
         );
     }
 }

@@ -4,18 +4,15 @@ declare(strict_types=1);
 
 namespace achertovsky\RadixTrie;
 
-use achertovsky\RadixTrie\Entity\Edge;
 use achertovsky\RadixTrie\Entity\Node;
 
 class ValueFinder
 {
     private NodeSearcher $nodeSearcher;
-    private StringHelper $stringHelper;// @todo not used
 
     public function __construct()
     {
         $this->nodeSearcher = new NodeSearcher();
-        $this->stringHelper = new StringHelper();
     }
     /**
      * @return string[]
@@ -30,9 +27,6 @@ class ValueFinder
             $rootNode,
             $query
         );
-        if ($lookupNode === null) {
-            return $output; //@todo not covered
-        }
 
         return array_filter(
             $this->getLeafValuesByQuery(
