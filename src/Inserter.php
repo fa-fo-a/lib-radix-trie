@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace achertovsky\RadixTrie;
 
-use achertovsky\RadixTrie\Entity\InsertMetadata;
 use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\InsertRules\BaseRule;
+use achertovsky\RadixTrie\Entity\InsertMetadata;
 use achertovsky\RadixTrie\InsertRules\AddLeafFromLeafRule;
 use achertovsky\RadixTrie\InsertRules\BreakNodeInsertRule;
 use achertovsky\RadixTrie\InsertRules\DontInsertExistingLeafRule;
 use achertovsky\RadixTrie\InsertRules\MatchingNodeAndMatchingLeafRule;
 use achertovsky\RadixTrie\InsertRules\AddLeafFromNodeWithSameLabelRule;
 
+/**
+ * @todo review probability to remove rules and have all logic straight here, just as deleter
+ */
 class Inserter
 {
     private NodeSearcher $nodeSearcher;

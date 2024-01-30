@@ -7,6 +7,7 @@ namespace achertovsky\RadixTrie;
 use achertovsky\RadixTrie\Entity\Node;
 
 // @todo question the SOLIDity of solution (as we create instances in constructor)
+// @todo radixtrie is redundant
 class RadixTrie
 {
     private Inserter $inserter;
