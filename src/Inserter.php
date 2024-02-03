@@ -4,43 +4,18 @@ declare(strict_types=1);
 
 namespace achertovsky\RadixTrie;
 
+use achertovsky\RadixTrie\Entity\Edge;
 use achertovsky\RadixTrie\Entity\Node;
-use achertovsky\RadixTrie\InsertRules\BaseRule;
-use achertovsky\RadixTrie\Entity\InsertMetadata;
-use achertovsky\RadixTrie\InsertRules\AddLeafFromLeafRule;
-use achertovsky\RadixTrie\InsertRules\BreakNodeInsertRule;
-use achertovsky\RadixTrie\InsertRules\DontInsertExistingLeafRule;
-use achertovsky\RadixTrie\InsertRules\MatchingNodeAndMatchingLeafRule;
-use achertovsky\RadixTrie\InsertRules\AddLeafFromNodeWithSameLabelRule;
+use achertovsky\RadixTrie\Entity\BreakRuleMetadata;
 
-/**
- * @todo review probability to remove rules and have all logic straight here, just as deleter
- */
 class Inserter
 {
     private NodeSearcher $nodeSearcher;
-    private array $rules;
-    private InsertMetadata $insertMetadata;
     private StringHelper $stringHelper;
 
     public function __construct(
     ) {
         $this->nodeSearcher = new NodeSearcher();
-        $this->rules = [
-            new AddLeafFromLeafRule(),
-            new AddLeafFromNodeWithSameLabelRule(),
-            new DontInsertExistingLeafRule(),
-            new MatchingNodeAndMatchingLeafRule(),
-            new BreakNodeInsertRule(),
-        ];
-        $this->insertMetadata = new InsertMetadata(
-            function (Node $node) {
-                return $node->getEdgeToLeaf() !== null;
-            },
-            false,
-            false,
-            null
-        );
         $this->stringHelper = new StringHelper();
     }
 
@@ -53,35 +28,136 @@ class Inserter
             $word
         );
 
-        $this->insertMetadata->clean();
-        $this->insertMetadata
-            ->setNode($closestNode)
-            ->setLeaf($closestNode->isLeaf())
-            ->setSameWord(
-                $this->stringHelper
-                    ->isSameWords(
-                        $closestNode->getLabel(),
-                        $word
-                    )
-            )
-        ;
+        $isLeaf = $closestNode->isLeaf();
+        $isSameWord = $this->stringHelper->isSameWords(
+            $closestNode->getLabel(),
+            $word
+        );
 
-        /**
-         * @var BaseRule $rule
-         */
-        foreach ($this->rules as $rule) {
-            if (!$rule->supports(
-                $this->insertMetadata
-            )) {
-                continue;
+        if ($isLeaf) {
+            if ($isSameWord) {
+                return;
             }
 
-            $rule->apply(
+            $this->preserveLeafForNonRootNode($closestNode);
+
+            $this->addLeafToNode(
                 $closestNode,
                 $word
             );
 
             return;
         }
+
+        if (
+            $isSameWord
+            && $closestNode->getEdgeToLeaf()
+        ) {
+            return;
+        }
+
+        $breakRuleMetadata = $this->getPartialMatchingEdge(
+            $closestNode,
+            $word
+        );
+
+        if ($breakRuleMetadata === null) {
+            $this->addLeafToNode(
+                $closestNode,
+                $word
+            );
+
+            return;
+        }
+
+        $junctionNode = $this->createJunctionNode(
+            $closestNode,
+            $breakRuleMetadata
+        );
+
+        $this->addLeafToNode(
+            $junctionNode,
+            $word
+        );
+    }
+
+    private function addLeafToNode(
+        Node $sourceNode,
+        string $targetNodeLabel,
+        ?string $edgeLabel = null
+    ): void {
+        $targetNode = new Node($targetNodeLabel);
+        $edge = new Edge(
+            $edgeLabel
+            ?? $this->stringHelper->getSuffix(
+                $sourceNode->getLabel(),
+                $targetNodeLabel
+            ),
+            $targetNode
+        );
+        $sourceNode->addEdge($edge);
+    }
+
+    protected function getPartialMatchingEdge(
+        Node $baseNode,
+        string $word
+    ): ?BreakRuleMetadata {
+        $suffix = $this->stringHelper->getSuffix(
+            $baseNode->getLabel(),
+            $word
+        );
+        foreach ($baseNode->getEdges() as $edge) {
+            $matchingAmount = $this->stringHelper->getCommonPrefixLength(
+                $edge->getLabel(),
+                $suffix
+            );
+            if ($matchingAmount > 0) {
+                return new BreakRuleMetadata(
+                    $edge,
+                    $matchingAmount
+                );
+            }
+        }
+
+        return null;
+    }
+
+    private function preserveLeafForNonRootNode(
+        Node $node
+    ): void {
+        if (strlen($node->getLabel()) === 0) {
+            return;
+        }
+        $this->addLeafToNode($node, $node->getLabel(), '');
+    }
+
+    private function createJunctionNode(
+        Node $closestNode,
+        BreakRuleMetadata $breakRuleMetadata
+    ): Node {
+        $partialEdge = $breakRuleMetadata->getEdge();
+        $leftLabel = substr(
+            $partialEdge->getLabel(),
+            0,
+            $breakRuleMetadata->getLength()
+        );
+        $rightLabel = substr(
+            $partialEdge->getLabel(),
+            $breakRuleMetadata->getLength()
+        );
+
+        $newNode = new Node($closestNode->getLabel() . $leftLabel);
+        $newNode->addEdge(
+            new Edge(
+                $rightLabel,
+                $partialEdge->getTargetNode()
+            )
+        );
+        $partialEdge->setLabel(
+            $leftLabel
+        );
+        $partialEdge->setTargetNode($newNode);
+
+        return $newNode;
     }
 }

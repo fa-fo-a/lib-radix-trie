@@ -7,6 +7,7 @@ namespace achertovsky\RadixTrie;
 use achertovsky\RadixTrie\Entity\Edge;
 use achertovsky\RadixTrie\Entity\Node;
 
+// @todo: maybe change to return DTO with partial matching edge if found
 class NodeSearcher
 {
     public function search(
