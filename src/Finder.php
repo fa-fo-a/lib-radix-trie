@@ -6,7 +6,7 @@ namespace achertovsky\RadixTrie;
 
 use achertovsky\RadixTrie\Entity\Node;
 
-class ValueFinder
+class Finder
 {
     private NodeSearcher $nodeSearcher;
 
@@ -17,12 +17,10 @@ class ValueFinder
     /**
      * @return string[]
      */
-    public function getLeafValues(
+    public function find(
         Node $rootNode,
         string $query
     ): array {
-        $output = [];
-
         $lookupNode = $this->nodeSearcher->search(
             $rootNode,
             $query

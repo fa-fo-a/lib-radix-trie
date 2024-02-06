@@ -11,14 +11,14 @@ use achertovsky\RadixTrie\Entity\Node;
 class RadixTrie
 {
     private Inserter $inserter;
-    private ValueFinder $valueFinder;
+    private Finder $valueFinder;
     private Deleter $deleter;
 
     public function __construct(
         private Node $rootNode = new Node(Node::ROOT_LABEL)
     ) {
         $this->inserter = new Inserter();
-        $this->valueFinder = new ValueFinder();
+        $this->valueFinder = new Finder();
         $this->deleter = new Deleter();
     }
 
@@ -27,7 +27,7 @@ class RadixTrie
      */
     public function find(string $query): array
     {
-        return $this->valueFinder->getLeafValues(
+        return $this->valueFinder->find(
             $this->rootNode,
             $query
         );
