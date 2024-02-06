@@ -1,8 +1,8 @@
 # User
-Lib called to reduce hassle in projects with jwt. Expected to be convenient solution for the purpose.
+Lib called to provide https://en.wikipedia.org/wiki/Radix_tree impelementation for php
 
 ## usage
-To check usage cases, please, refer to `tests/Service/JwtManagerTest.php`, `tests/Service/Functional.php`. Those tests explain how JwtManager should be used in your application.
+To check usage cases, please, refer to `tests/InserterTest.php`, `tests/FinderTest.php`, `tests/DeleterTest.php`.
 
 # Development
 ## install env
