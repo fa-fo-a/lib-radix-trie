@@ -6,6 +6,7 @@ namespace achertovsky\RadixTrie\Entity;
 
 use achertovsky\RadixTrie\Entity\Node;
 
+/** @todo review removal of this entity */
 class Edge
 {
     public function __construct(
