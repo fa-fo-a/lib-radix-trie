@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace achertovsky\RadixTrie\Tests;
+namespace achertovsky\RadixTrie\Tests\Stresstest;
 
-use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\RadixTrie;
+use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\Tests\BaseTestCase;
 
 class InsertStresstestTest extends BaseTestCase

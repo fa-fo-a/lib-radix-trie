@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace achertovsky\RadixTrie\Tests;
+namespace achertovsky\RadixTrie\Tests\Stresstest;
 
-use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\RadixTrie;
+use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\Tests\BaseTestCase;
 
 class DeleteStresstestTest extends BaseTestCase
@@ -67,53 +67,5 @@ class DeleteStresstestTest extends BaseTestCase
         }
 
         return $result;
-    }
-
-    protected function assertArraysHaveEqualDataset(
-        array $expectedArray,
-        array $actualArray,
-        string $explanation = ''
-    ): void {
-        sort($expectedArray);
-        sort($actualArray);
-
-        $this->assertEquals(
-            $expectedArray,
-            $actualArray,
-            $explanation
-        );
-    }
-
-    private function assertNodeRecursivelyEqual(
-        Node $expectedNode,
-        Node $actualNode
-    ): void {
-        $this->assertEquals(
-            $expectedNode->getLabel(),
-            $actualNode->getLabel()
-        );
-
-        $expectedEdges = [];
-        foreach ($expectedNode->getEdges() as $edge) {
-            $expectedEdges[$edge->getLabel()] = $edge;
-        }
-        $actualEdges = [];
-        foreach ($actualNode->getEdges() as $edge) {
-            $actualEdges[$edge->getLabel()] = $edge;
-        }
-
-        ksort($expectedEdges);
-        ksort($actualEdges);
-        $this->assertEquals(
-            array_keys($expectedEdges),
-            array_keys($actualEdges)
-        );
-
-        foreach (array_keys($expectedEdges) as $edgeKey) {
-            $this->assertNodeRecursivelyEqual(
-                $expectedEdges[$edgeKey]->getTargetNode(),
-                $actualEdges[$edgeKey]->getTargetNode()
-            );
-        }
     }
 }
