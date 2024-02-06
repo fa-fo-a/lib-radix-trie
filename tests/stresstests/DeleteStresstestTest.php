@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace achertovsky\RadixTrie\Tests\Stresstest;
 
-use achertovsky\RadixTrie\RadixTrie;
+use achertovsky\RadixTrie\Finder;
+use achertovsky\RadixTrie\Deleter;
+use achertovsky\RadixTrie\Inserter;
 use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\Tests\BaseTestCase;
 
@@ -15,9 +17,10 @@ class DeleteStresstestTest extends BaseTestCase
 
     public function testStresstest(): void
     {
-        $trie = new RadixTrie(
-            new Node(Node::ROOT_LABEL)
-        );
+        $rootNode = new Node(Node::ROOT_LABEL);
+        $inserter = new Inserter();
+        $finder = new Finder();
+        $deleter = new Deleter();
         for ($i = 0; $i < self::ARBITRARY_AMOUNT_OF_WORDS_FOR_STRESSTEST; $i++) {
             $word = $this->randomString(
                 mt_rand(
@@ -25,35 +28,43 @@ class DeleteStresstestTest extends BaseTestCase
                     10
                 )
             );
-            $trie->insert(
+            $inserter->insert(
+                $rootNode,
                 $word
             );
         }
 
         while (1) {
-            $expectedTrie = new RadixTrie(
-                new Node(Node::ROOT_LABEL)
-            );
+            $expectedRootNode = new Node(Node::ROOT_LABEL);
             $wordsToRemove = [];
-            $words = $trie->find('');
+            $words = $finder->find(
+                $rootNode,
+                ''
+            );
             if ($words === []) {
                 break;
             }
             for ($i = 0; $i < self::HOW_MANY_WORDS_REMOVE; $i++) {
                 $word = $words[array_rand($words)];
                 $wordsToRemove[] = $word;
-                $trie->delete($word);
+                $deleter->delete(
+                    $rootNode,
+                    $word
+                );
             }
             foreach ($words as $word) {
                 if (in_array($word, $wordsToRemove)) {
                     continue;
                 }
-                $expectedTrie->insert($word);
+                $inserter->insert(
+                    $expectedRootNode,
+                    $word
+                );
             }
 
             $this->assertNodeRecursivelyEqual(
-                $expectedTrie->getRootNode(),
-                $trie->getRootNode()
+                $expectedRootNode,
+                $rootNode
             );
         }
     }

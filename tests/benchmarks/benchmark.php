@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 include __DIR__ . '/../../vendor/autoload.php';
 
-use achertovsky\RadixTrie\RadixTrie;
+use achertovsky\RadixTrie\Finder;
+use achertovsky\RadixTrie\Inserter;
 use achertovsky\RadixTrie\Entity\Node;
 
 $words = unserialize(
@@ -12,14 +13,17 @@ $words = unserialize(
         __DIR__ . '/30k_words.txt'
     )
 );
+$finder = new Finder();
+$inserter = new Inserter();
 $start_memory = memory_get_usage();
-$trie = new RadixTrie(
-    new Node(Node::ROOT_LABEL)
-);
+$rootNode = new Node(Node::ROOT_LABEL);
 
 $insertStart = microtime(true);
 foreach ($words as $word) {
-    $trie->insert($word);
+    $inserter->insert(
+        $rootNode,
+        $word
+    );
 }
 $insertEnd = microtime(true);
 
@@ -29,11 +33,17 @@ echo sprintf(
 );
 
 $findAllStart = microtime(true);
-$trie->find('');
+$finder->find(
+    $rootNode,
+    ''
+);
 $findAllEnd = microtime(true);
 
 $findOneWordAllStart = microtime(true);
-$trie->find('momzuwap');
+$finder->find(
+    $rootNode,
+    'momzuwap'
+);
 $findOneWordAllEnd = microtime(true);
 gc_collect_cycles();
 echo sprintf(
@@ -42,11 +52,11 @@ echo sprintf(
 )."\n";
 
 $serializeStart = microtime(true);
-$trieData = serialize($trie->getRootNode());
+$trieData = serialize($rootNode);
 $serializeEnd = microtime(true);
 
 $deserializeStart = microtime(true);
-new RadixTrie(unserialize($trieData));
+unserialize($trieData);
 $deserializeEnd = microtime(true);
 
 echo sprintf(

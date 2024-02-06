@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace achertovsky\RadixTrie\Tests\Stresstest;
 
-use achertovsky\RadixTrie\RadixTrie;
+use achertovsky\RadixTrie\Finder;
+use achertovsky\RadixTrie\Inserter;
 use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\Tests\BaseTestCase;
 
@@ -14,9 +15,10 @@ class InsertStresstestTest extends BaseTestCase
 
     public function testStresstest(): void
     {
-        $trie = new RadixTrie(
-            new Node(Node::ROOT_LABEL)
-        );
+        $inserter = new Inserter();
+        $finder = new Finder();
+        $rootNode = new Node(Node::ROOT_LABEL);
+
         $words = [];
         for ($i = 0; $i < self::ARBITRARY_AMOUNT_OF_WORDS_FOR_STRESSTEST; $i++) {
             $words[] = $word = $this->randomString(
@@ -25,14 +27,18 @@ class InsertStresstestTest extends BaseTestCase
                     10
                 )
             );
-            $trie->insert(
+            $inserter->insert(
+                $rootNode,
                 $word
             );
         }
 
         $this->assertArraysHaveEqualDataset(
             array_unique($words),
-            $trie->find('')
+            $finder->find(
+                $rootNode,
+                ''
+            )
         );
     }
 
