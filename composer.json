@@ -14,8 +14,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "achertovsky\\RadixTrie\\Tests\\": "tests/",
-            "achertovsky\\RadixTrie\\Tests\\Stresstest": "tests/stresstest"
+            "achertovsky\\RadixTrie\\Tests\\": "tests/"
         }
     },
     "licence": "MIT",

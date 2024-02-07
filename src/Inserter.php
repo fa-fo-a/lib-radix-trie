@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace achertovsky\RadixTrie;
 
-use achertovsky\RadixTrie\Entity\Edge;
 use achertovsky\RadixTrie\Entity\Node;
 use achertovsky\RadixTrie\Entity\BreakRuleMetadata;
 
@@ -28,31 +27,30 @@ class Inserter
             $word
         );
 
+        $isValue = $closestNode->isValue();
         $isLeaf = $closestNode->isLeaf();
         $isSameWord = $this->stringHelper->isSameWords(
             $closestNode->getLabel(),
             $word
         );
 
-        if ($isLeaf) {
-            if ($isSameWord) {
-                return;
+        if ($isValue && $isSameWord) {
+            return;
+        }
+        if (!$isValue && $isSameWord) {
+            if (strlen($word) > 0) {
+                $closestNode->setValue(true);
             }
 
-            $this->preserveLeafForNonRootNode($closestNode);
+            return;
+        }
 
+        if ($isLeaf) {
             $this->addLeafToNode(
                 $closestNode,
                 $word
             );
 
-            return;
-        }
-
-        if (
-            $isSameWord
-            && $closestNode->getEdgeToLeaf()
-        ) {
             return;
         }
 
@@ -86,16 +84,19 @@ class Inserter
         string $targetNodeLabel,
         ?string $edgeLabel = null
     ): void {
-        $targetNode = new Node($targetNodeLabel);
-        $edge = new Edge(
+        if ($sourceNode->getLabel() === $targetNodeLabel) {
+            $sourceNode->setValue(true);
+
+            return;
+        }
+        $sourceNode->addLeaf(
             $edgeLabel
             ?? $this->stringHelper->getSuffix(
                 $sourceNode->getLabel(),
                 $targetNodeLabel
             ),
-            $targetNode
+            new Node($targetNodeLabel, true)
         );
-        $sourceNode->addEdge($edge);
     }
 
     protected function getPartialMatchingEdge(
@@ -106,9 +107,9 @@ class Inserter
             $baseNode->getLabel(),
             $word
         );
-        foreach ($baseNode->getEdges() as $edge) {
+        foreach ($baseNode->getEdges() as $edge => $targetNode) {
             $matchingAmount = $this->stringHelper->getCommonPrefixLength(
-                $edge->getLabel(),
+                $edge,
                 $suffix
             );
             if ($matchingAmount > 0) {
@@ -122,41 +123,31 @@ class Inserter
         return null;
     }
 
-    private function preserveLeafForNonRootNode(
-        Node $node
-    ): void {
-        if (strlen($node->getLabel()) === 0) {
-            return;
-        }
-        $this->addLeafToNode($node, $node->getLabel(), '');
-    }
-
     private function createJunctionNode(
         Node $closestNode,
         BreakRuleMetadata $breakRuleMetadata
     ): Node {
         $partialEdge = $breakRuleMetadata->getEdge();
         $leftLabel = substr(
-            $partialEdge->getLabel(),
+            $partialEdge,
             0,
             $breakRuleMetadata->getLength()
         );
         $rightLabel = substr(
-            $partialEdge->getLabel(),
+            $partialEdge,
             $breakRuleMetadata->getLength()
         );
 
         $newNode = new Node($closestNode->getLabel() . $leftLabel);
-        $newNode->addEdge(
-            new Edge(
+        $newNode->addLeaf(
                 $rightLabel,
-                $partialEdge->getTargetNode()
-            )
+                $closestNode->getEdges()[$partialEdge]
         );
-        $partialEdge->setLabel(
-            $leftLabel
+        $closestNode->removeEdge($partialEdge);
+        $closestNode->addLeaf(
+            $leftLabel,
+            $newNode
         );
-        $partialEdge->setTargetNode($newNode);
 
         return $newNode;
     }

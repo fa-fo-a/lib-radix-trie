@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace achertovsky\RadixTrie;
 
-use achertovsky\RadixTrie\Entity\Edge;
 use achertovsky\RadixTrie\Entity\Node;
 
 class Deleter

@@ -19,27 +19,21 @@ class FinderTest extends BaseTestCase
 
         $this->finder = new Finder();
 
-        $this->rootNode = new Node(Node::ROOT_LABEL);
-        $testNode = $this->addLeafToNode(
-            $this->rootNode,
-            'test',
-            'test'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'test',
-            ''
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'tester',
-            'er'
-        );
-        $this->addLeafToNode(
-            $this->rootNode,
-            'rat',
-            'rat'
-        );
+        $this->rootNode =
+            (new Node(Node::ROOT_LABEL))
+            ->addLeaf(
+                'test',
+                (new Node('test', true))
+                ->addLeaf(
+                    'er',
+                    new Node('tester', true)
+                )
+            )
+            ->addLeaf(
+                'rat',
+                new Node('rat', true)
+            )
+        ;
     }
 
     public function testSearchWorksGood(): void

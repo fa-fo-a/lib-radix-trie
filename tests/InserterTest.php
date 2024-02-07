@@ -19,12 +19,12 @@ class InserterTest extends BaseTestCase
 
     public function testSingleValueInsertWouldInsert(): void
     {
-        $expectedRootNode = new Node(Node::ROOT_LABEL);
-        $this->addLeafToNode(
-            $expectedRootNode,
-            'test',
-            'test'
-        );
+        $expectedRootNode = (new Node(Node::ROOT_LABEL))
+            ->addLeaf(
+                'test',
+                new Node('test', true)
+            )
+        ;
 
         $rootNode = new Node(Node::ROOT_LABEL);
 
@@ -41,12 +41,13 @@ class InserterTest extends BaseTestCase
 
     public function testSingleValueInsertWouldNotDuplicate(): void
     {
-        $expectedRootNode = new Node(Node::ROOT_LABEL);
-        $this->addLeafToNode(
-            $expectedRootNode,
-            'test',
-            'test'
-        );
+        $expectedRootNode =
+            (new Node(Node::ROOT_LABEL))
+            ->addLeaf(
+                'test',
+                new Node('test', true)
+            )
+        ;
 
         $rootNode = new Node(Node::ROOT_LABEL);
         $this->inserter->insert(
@@ -76,27 +77,21 @@ class InserterTest extends BaseTestCase
     public function testBuildTrieWithSameWordRootAndAddingOrderWontMatter(
         array $differentlyOrderedWords
     ): void {
-        $expectedRootNode = new Node(Node::ROOT_LABEL);
-        $testNode = $this->addLeafToNode(
-            $expectedRootNode,
-            'test',
-            'test'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'test',
-            ''
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'tester',
-            'er'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'testing',
-            'ing'
-        );
+        $expectedRootNode =
+            (new Node(Node::ROOT_LABEL))
+            ->addLeaf(
+                'test',
+                (new Node('test', true))
+                ->addLeaf(
+                    'er',
+                    new Node('tester', true)
+                )
+                ->addLeaf(
+                    'ing',
+                    new Node('testing', true)
+                )
+            )
+        ;
 
         $rootNode = new Node(Node::ROOT_LABEL);
         foreach ($differentlyOrderedWords as $word) {
@@ -141,42 +136,29 @@ class InserterTest extends BaseTestCase
 
     public function testBuildTrieWithSamePrefixes(): void
     {
-        $expectedRootNode = new Node(Node::ROOT_LABEL);
-        $tNode = $this->addLeafToNode(
-            $expectedRootNode,
-            't',
-            't'
-        );
-        $toNode = $this->addLeafToNode(
-            $tNode,
-            'to',
-            'o'
-        );
-        $this->addLeafToNode(
-            $toNode,
-            'to',
-            ''
-        );
-        $this->addLeafToNode(
-            $toNode,
-            'tool',
-            'ol'
-        );
-        $testNode = $this->addLeafToNode(
-            $tNode,
-            'test',
-            'est'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'test',
-            ''
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'tester',
-            'er'
-        );
+        $expectedRootNode =
+            (new Node(Node::ROOT_LABEL))
+            ->addLeaf(
+                't',
+                (new Node('t'))
+                ->addLeaf(
+                    'o',
+                    (new Node('to', true))
+                    ->addLeaf(
+                        'ol',
+                        new Node('tool', true)
+                    )
+                )
+                ->addLeaf(
+                    'est',
+                    (new Node('test', true))
+                    ->addLeaf(
+                        'er',
+                        new Node('tester', true)
+                    )
+                )
+            )
+        ;
 
         $rootNode = new Node(Node::ROOT_LABEL);
         $this->inserter->insert(

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace achertovsky\RadixTrie;
 
-use achertovsky\RadixTrie\Entity\Edge;
 use achertovsky\RadixTrie\Entity\Node;
 
 // @todo: maybe change to return DTO with partial matching edge if found
@@ -30,8 +29,8 @@ class NodeSearcher
                 return $currentNode;
             }
 
-            $currentNode = $edge->getTargetNode();
-            $currentLabel = substr($currentLabel, strlen($edge->getLabel()));
+            $currentNode = $currentNode->getEdges()[$edge];
+            $currentLabel = substr($currentLabel, strlen($edge));
         }
 
         return $currentNode;
@@ -40,10 +39,10 @@ class NodeSearcher
     private function getMatchingEdge(
         Node $node,
         string $query
-    ): ?Edge {
-        foreach ($node->getEdges() as $edge) {
-            $pos = strpos($query, $edge->getLabel());
-            if ($pos === 0 && strlen($edge->getLabel()) > 0) {
+    ): ?string {
+        foreach ($node->getEdges() as $edge => $node) {
+            $pos = strpos($query, $edge);
+            if ($pos === 0 && strlen($edge) > 0) {
                 return $edge;
             }
         }
