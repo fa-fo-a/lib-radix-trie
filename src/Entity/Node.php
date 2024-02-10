@@ -17,6 +17,11 @@ class Node
         $this->edges = [];
     }
 
+    public function getData()
+    {
+        return $this->data;
+    }
+
     public function getLabel(): string
     {
         return $this->label;

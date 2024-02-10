@@ -42,7 +42,7 @@ class NodeSearcher
     ): ?string {
         foreach ($node->getEdges() as $edge => $node) {
             $pos = strpos($query, $edge);
-            if ($pos === 0 && strlen($edge) > 0) {
+            if ($pos === 0) {
                 return $edge;
             }
         }

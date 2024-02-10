@@ -30,12 +30,16 @@ class DeleterTest extends BaseTestCase
 
     public function testWillDeleteLeaf(): void
     {
-        $rootNode = new Node(Node::ROOT_LABEL);
-        $this->addLeafToNode(
-            $rootNode,
-            'test',
-            'test'
-        );
+        $rootNode =
+            (new Node(Node::ROOT_LABEL))
+            ->addLeaf(
+                'test',
+                new Node(
+                    'test',
+                    true
+                )
+            )
+        ;
 
         $this->deleter->delete(
             $rootNode,
@@ -50,18 +54,27 @@ class DeleterTest extends BaseTestCase
 
     public function testWillNotDeleteAsNoMatchingNode(): void
     {
-        $rootNode = new Node(Node::ROOT_LABEL);
-        $this->addLeafToNode(
-            $rootNode,
-            'test',
-            'test'
-        );
-        $expectedNode = new Node(Node::ROOT_LABEL);
-        $this->addLeafToNode(
-            $expectedNode,
-            'test',
-            'test'
-        );
+        $rootNode =
+            (new Node(Node::ROOT_LABEL))
+            ->addLeaf(
+                'test',
+                new Node(
+                    'test',
+                    true
+                )
+            )
+        ;
+
+        $expectedNode =
+            (new Node(Node::ROOT_LABEL))
+            ->addLeaf(
+                'test',
+                new Node(
+                    'test',
+                    true
+                )
+            )
+        ;
 
         $this->deleter->delete(
             $rootNode,
@@ -76,39 +89,37 @@ class DeleterTest extends BaseTestCase
 
     public function testWontDeleteIntermediaryNode(): void
     {
-        $expectedNode = new Node(Node::ROOT_LABEL);
-        $testNode = $this->addLeafToNode(
-            $expectedNode,
-            'test',
-            'test'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'testing',
-            'ing'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'tester',
-            'er'
-        );
+        $expectedNode =
+            (new Node(Node::ROOT_LABEL))
+            ->addLeaf(
+                'test',
+                (new Node('test'))
+                ->addLeaf(
+                    'ing',
+                    new Node('testing', true)
+                )
+                ->addLeaf(
+                    'er',
+                    new Node('tester', true)
+                )
+            )
+        ;
 
-        $rootNode = new Node(Node::ROOT_LABEL);
-        $testNode = $this->addLeafToNode(
-            $rootNode,
-            'test',
-            'test'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'testing',
-            'ing'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'tester',
-            'er'
-        );
+        $rootNode =
+            (new Node(Node::ROOT_LABEL))
+            ->addLeaf(
+                'test',
+                (new Node('test'))
+                ->addLeaf(
+                    'ing',
+                    new Node('testing', true)
+                )
+                ->addLeaf(
+                    'er',
+                    new Node('tester', true)
+                )
+            )
+        ;
 
         $this->deleter->delete(
             $rootNode,
@@ -121,46 +132,39 @@ class DeleterTest extends BaseTestCase
         );
     }
 
-    public function testWillDeleteIntermediaryNodesLeaf(): void
+    public function testWillDeleteIntermediaryNodeValue(): void
     {
-        $expectedNode = new Node(Node::ROOT_LABEL);
-        $testNode = $this->addLeafToNode(
-            $expectedNode,
-            'test',
-            'test'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'testing',
-            'ing'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'tester',
-            'er'
-        );
+        $expectedNode =
+            (new Node(Node::ROOT_LABEL))
+            ->addLeaf(
+                'test',
+                (new Node('test'))
+                ->addLeaf(
+                    'ing',
+                    new Node('testing', true)
+                )
+                ->addLeaf(
+                    'er',
+                    new Node('tester', true)
+                )
+            )
+        ;
 
-        $rootNode = new Node(Node::ROOT_LABEL);
-        $testNode = $this->addLeafToNode(
-            $rootNode,
-            'test',
-            'test'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'testing',
-            'ing'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'tester',
-            'er'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'test',
-            ''
-        );
+        $rootNode =
+            (new Node(Node::ROOT_LABEL))
+            ->addLeaf(
+                'test',
+                (new Node('test', true))
+                ->addLeaf(
+                    'ing',
+                    new Node('testing', true)
+                )
+                ->addLeaf(
+                    'er',
+                    new Node('tester', true)
+                )
+            )
+        ;
 
         $this->deleter->delete(
             $rootNode,
@@ -175,29 +179,25 @@ class DeleterTest extends BaseTestCase
 
     public function testWillDeleteLeafAndTransformIntermediaryNodeToLeaf(): void
     {
-        $expectedNode = new Node(Node::ROOT_LABEL);
-        $this->addLeafToNode(
-            $expectedNode,
-            'test',
-            'test'
-        );
+        $expectedNode =
+            (new Node(Node::ROOT_LABEL))
+            ->addLeaf(
+                'test',
+                (new Node('test', true))
+            )
+        ;
 
-        $rootNode = new Node(Node::ROOT_LABEL);
-        $testNode = $this->addLeafToNode(
-            $rootNode,
-            'test',
-            'test'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'tester',
-            'er'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'test',
-            ''
-        );
+        $rootNode =
+            (new Node(Node::ROOT_LABEL))
+            ->addLeaf(
+                'test',
+                (new Node('test', true))
+                ->addLeaf(
+                    'er',
+                    new Node('tester', true)
+                )
+            )
+        ;
 
         $this->deleter->delete(
             $rootNode,
@@ -212,29 +212,29 @@ class DeleterTest extends BaseTestCase
 
     public function testWillDeleteOneOfLeafsAndCollapseIntermediaryNodeWhichGrowsFromRoot(): void
     {
-        $expectedNode = new Node(Node::ROOT_LABEL);
-        $this->addLeafToNode(
-            $expectedNode,
-            'testing',
-            'testing'
-        );
+        $expectedNode =
+            (new Node(Node::ROOT_LABEL))
+            ->addLeaf(
+                'testing',
+                new Node('testing', true)
+            )
+        ;
 
-        $rootNode = new Node(Node::ROOT_LABEL);
-        $testNode = $this->addLeafToNode(
-            $rootNode,
-            'test',
-            'test'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'tester',
-            'er'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'testing',
-            'ing'
-        );
+        $rootNode =
+            (new Node(Node::ROOT_LABEL))
+            ->addLeaf(
+                'test',
+                (new Node('test'))
+                ->addLeaf(
+                    'ing',
+                    new Node('testing', true)
+                )
+                ->addLeaf(
+                    'er',
+                    new Node('tester', true)
+                )
+            )
+        ;
 
         $this->deleter->delete(
             $rootNode,
@@ -249,49 +249,37 @@ class DeleterTest extends BaseTestCase
 
     public function testWillDeleteOneOfLeafsAndCollapseIntermediaryNode(): void
     {
-        $expectedNode = new Node(Node::ROOT_LABEL);
-        $tNode = $this->addLeafToNode(
-            $expectedNode,
-            't',
-            't'
-        );
-        $this->addLeafToNode(
-            $tNode,
-            'testing',
-            'esting'
-        );
-        $this->addLeafToNode(
-            $tNode,
-            't',
-            ''
-        );
+        $expectedNode =
+            (new Node(Node::ROOT_LABEL))
+            ->addLeaf(
+                't',
+                (new Node('t', true))
+                ->addLeaf(
+                    'esting',
+                    new Node('testing', true)
+                )
+            )
+        ;
 
-        $rootNode = new Node(Node::ROOT_LABEL);
-        $tNode = $this->addLeafToNode(
-            $rootNode,
-            't',
-            't'
-        );
-        $testNode = $this->addLeafToNode(
-            $tNode,
-            'test',
-            'est'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'testing',
-            'ing'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'tester',
-            'er'
-        );
-        $this->addLeafToNode(
-            $tNode,
-            't',
-            ''
-        );
+        $rootNode =
+            (new Node(Node::ROOT_LABEL))
+            ->addLeaf(
+                't',
+                (new Node('t', true))
+                ->addLeaf(
+                    'est',
+                    (new Node('test'))
+                    ->addLeaf(
+                        'ing',
+                        new Node('testing', true)
+                    )
+                    ->addLeaf(
+                        'er',
+                        new Node('tester', true)
+                    )
+                )
+            )
+        ;
 
         $this->deleter->delete(
             $rootNode,
@@ -306,59 +294,41 @@ class DeleterTest extends BaseTestCase
 
     public function testDeleteFirstIntermediaryNode(): void
     {
-        $expectedNode = new Node(Node::ROOT_LABEL);
-        $testNode = $this->addLeafToNode(
-            $expectedNode,
-            'test',
-            'test'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'testing',
-            'ing'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'test',
-            ''
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'tester',
-            'er'
-        );
+        $expectedNode =
+            (new Node(Node::ROOT_LABEL))
+            ->addLeaf(
+                'test',
+                (new Node('test', true))
+                ->addLeaf(
+                    'ing',
+                    new Node('testing', true)
+                )
+                ->addLeaf(
+                    'er',
+                    new Node('tester', true)
+                )
+            )
+        ;
 
-        $rootNode = new Node(Node::ROOT_LABEL);
-        $tNode = $this->addLeafToNode(
-            $rootNode,
-            't',
-            't'
-        );
-        $testNode = $this->addLeafToNode(
-            $tNode,
-            'test',
-            'est'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'testing',
-            'ing'
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'tester',
-            'er'
-        );
-        $this->addLeafToNode(
-            $tNode,
-            't',
-            ''
-        );
-        $this->addLeafToNode(
-            $testNode,
-            'test',
-            ''
-        );
+        $rootNode =
+            (new Node(Node::ROOT_LABEL))
+            ->addLeaf(
+                't',
+                (new Node('t', true))
+                ->addLeaf(
+                    'est',
+                    (new Node('test', true))
+                    ->addLeaf(
+                        'ing',
+                        new Node('testing', true)
+                    )
+                    ->addLeaf(
+                        'er',
+                        new Node('tester', true)
+                    )
+                )
+            )
+        ;
 
         $this->deleter->delete(
             $rootNode,
@@ -373,17 +343,17 @@ class DeleterTest extends BaseTestCase
 
     public function testDeleteTwoLeafsOfRoot(): void
     {
-        $rootNode = new Node(Node::ROOT_LABEL);
-        $this->addLeafToNode(
-            $rootNode,
-            'test',
-            'test'
-        );
-        $this->addLeafToNode(
-            $rootNode,
-            'west',
-            'west'
-        );
+        $rootNode =
+            (new Node(Node::ROOT_LABEL))
+            ->addLeaf(
+                'test',
+                new Node('test', true)
+            )
+            ->addLeaf(
+                'west',
+                new Node('west', true)
+            )
+        ;
 
         $this->deleter->delete(
             $rootNode,
