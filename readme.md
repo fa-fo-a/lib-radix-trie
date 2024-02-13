@@ -2,7 +2,7 @@
 Lib called to provide https://en.wikipedia.org/wiki/Radix_tree impelementation for php
 
 ## usage
-To check usage cases, please, refer to `tests/InserterTest.php`, `tests/FinderTest.php`, `tests/DeleterTest.php`.
+To check usage cases, please, refer to `tests/InserterTest.php`, `tests/FinderTest.php`, `tests/DeleterTest.php`, `tests/CompressorTest.php`.
 
 # Development
 ## install env

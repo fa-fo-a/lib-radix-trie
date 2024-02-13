@@ -9,13 +9,10 @@ use achertovsky\RadixTrie\Entity\BreakRuleMetadata;
 
 class Inserter
 {
-    private NodeSearcher $nodeSearcher;
-    private StringHelper $stringHelper;
-
     public function __construct(
+        private NodeSearcher $nodeSearcher = new NodeSearcher(),
+        private StringHelper $stringHelper = new StringHelper()
     ) {
-        $this->nodeSearcher = new NodeSearcher();
-        $this->stringHelper = new StringHelper();
     }
 
     public function insert(

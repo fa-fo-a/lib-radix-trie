@@ -18,7 +18,6 @@ class NodeSearcher
         while (
             $currentNode !== null
             && !$currentNode->isLeaf()
-            && strlen($currentLabel) > 0
         ) {
             $edge = $this->getMatchingEdge(
                 $currentNode,
@@ -48,6 +47,4 @@ class NodeSearcher
 
         return null;
     }
-
 }
-

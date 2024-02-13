@@ -6,13 +6,8 @@ namespace achertovsky\RadixTrie;
 
 use achertovsky\RadixTrie\Entity\Node;
 
-class Compressor
+class Compressor implements CompressorInterface
 {
-    public function __construct(
-        private string $fqcnReplacer = ''
-    ) {
-    }
-
     public function compress(Node $node): string
     {
         return gzcompress(

@@ -8,12 +8,11 @@ use achertovsky\RadixTrie\Entity\Node;
 
 class Finder
 {
-    private NodeSearcher $nodeSearcher;
-
-    public function __construct()
-    {
-        $this->nodeSearcher = new NodeSearcher();
+    public function __construct(
+        private NodeSearcher $nodeSearcher = new NodeSearcher()
+    ) {
     }
+
     /**
      * @return string[]
      */
@@ -26,18 +25,9 @@ class Finder
             $query
         );
 
-        return array_filter(
-            $this->getLeafValuesByQuery(
-                $lookupNode,
-                $query
-            ),
-            function (string $value): bool {
-                if ($value === '') {
-                    return false;
-                }
-
-                return true;
-            }
+        return $this->getLeafValuesByQuery(
+            $lookupNode,
+            $query
         );
     }
 
