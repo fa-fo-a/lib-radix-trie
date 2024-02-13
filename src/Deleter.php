@@ -26,8 +26,6 @@ class Deleter
             $word
         );
 
-        // test -> (er) -> tester
-
         $edgeThatTargetsWord = null;
         $edges = $closestNode->getEdges();
         foreach ($edges as $edge => $targetNode) {
@@ -56,19 +54,9 @@ class Deleter
             }
         }
 
-        // if ($closestNode->getEdges()[$edgeThatTargetsWord]->isLeaf()) {
-        //     $nodeToWorkOn = $closestNode;
-        //     $edgeToRemove = $edgeThatTargetsWord;
-        // } elseif ($edgeThatTargetsWord->getTargetNode()->getEdgeToLeaf()) {
-        //     $nodeToWorkOn = $edgeThatTargetsWord->getTargetNode();
-        //     $edgeToRemove = $edgeThatTargetsWord->getTargetNode()->getEdgeToLeaf();
-        // }
-
         if ($nodeToWorkOn === null) {
             return;
         }
-
-        // $nodeToWorkOn->removeEdge($edgeToRemove);
 
         $this->collapseRedundantNode(
             $rootNode,
