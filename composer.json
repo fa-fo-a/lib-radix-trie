@@ -12,6 +12,11 @@
             "achertovsky\\RadixTrie\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "achertovsky\\RadixTrie\\Tests\\": "tests/"
+        }
+    },
     "licence": "MIT",
     "type": "library",
     "version": "0.1.0"

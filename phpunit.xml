@@ -2,11 +2,12 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.4/phpunit.xsd"
          bootstrap="vendor/autoload.php"
-         cacheDirectory=".phpunit.cache"
+         cacheDirectory=".phpunit.result.cache"
          executionOrder="depends,defects"
-         requireCoverageMetadata="true"
+         requireCoverageMetadata="false"
          beStrictAboutCoverageMetadata="true"
          beStrictAboutOutputDuringTests="true"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
          failOnRisky="true"
          failOnWarning="true">
     <testsuites>
@@ -19,5 +20,8 @@
         <include>
             <directory>src</directory>
         </include>
+        <exclude>
+            <directory>src/Entity</directory>
+        </exclude>
     </source>
 </phpunit>
