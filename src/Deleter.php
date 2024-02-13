@@ -43,7 +43,6 @@ class Deleter
         }
 
         $nodeToWorkOn = null;
-        $edgeToRemove = null;
         if ($edges[$edgeThatTargetsWord]->isValue()) {
             if ($edges[$edgeThatTargetsWord]->isLeaf()) {
                 $closestNode->removeEdge($edgeThatTargetsWord);

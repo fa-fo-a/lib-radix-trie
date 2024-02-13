@@ -28,7 +28,6 @@ class Inserter
         );
 
         $isValue = $closestNode->isValue();
-        $isLeaf = $closestNode->isLeaf();
         $isSameWord = $this->stringHelper->isSameWords(
             $closestNode->getLabel(),
             $word
@@ -45,6 +44,7 @@ class Inserter
             return;
         }
 
+        $isLeaf = $closestNode->isLeaf();
         if ($isLeaf) {
             $this->addLeafToNode(
                 $closestNode,
@@ -58,7 +58,6 @@ class Inserter
             $closestNode,
             $word
         );
-
         if ($breakRuleMetadata === null) {
             $this->addLeafToNode(
                 $closestNode,
@@ -81,8 +80,7 @@ class Inserter
 
     private function addLeafToNode(
         Node $sourceNode,
-        string $targetNodeLabel,
-        ?string $edgeLabel = null
+        string $targetNodeLabel
     ): void {
         if ($sourceNode->getLabel() === $targetNodeLabel) {
             $sourceNode->setValue(true);
@@ -90,8 +88,7 @@ class Inserter
             return;
         }
         $sourceNode->addLeaf(
-            $edgeLabel
-            ?? $this->stringHelper->getSuffix(
+            $this->stringHelper->getSuffix(
                 $sourceNode->getLabel(),
                 $targetNodeLabel
             ),
@@ -107,7 +104,7 @@ class Inserter
             $baseNode->getLabel(),
             $word
         );
-        foreach ($baseNode->getEdges() as $edge => $targetNode) {
+        foreach ($baseNode->getEdges() as $edge => $node) {
             $matchingAmount = $this->stringHelper->getCommonPrefixLength(
                 $edge,
                 $suffix
@@ -115,7 +112,8 @@ class Inserter
             if ($matchingAmount > 0) {
                 return new BreakRuleMetadata(
                     $edge,
-                    $matchingAmount
+                    $matchingAmount,
+                    $suffix
                 );
             }
         }
@@ -140,8 +138,8 @@ class Inserter
 
         $newNode = new Node($closestNode->getLabel() . $leftLabel);
         $newNode->addLeaf(
-                $rightLabel,
-                $closestNode->getEdges()[$partialEdge]
+            $rightLabel,
+            $closestNode->getEdges()[$partialEdge]
         );
         $closestNode->removeEdge($partialEdge);
         $closestNode->addLeaf(
