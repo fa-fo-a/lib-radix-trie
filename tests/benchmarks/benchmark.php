@@ -6,6 +6,7 @@ include __DIR__ . '/../../vendor/autoload.php';
 
 use achertovsky\RadixTrie\Finder;
 use achertovsky\RadixTrie\Inserter;
+use achertovsky\RadixTrie\Compressor;
 use achertovsky\RadixTrie\Entity\Node;
 
 $words = unserialize(
@@ -17,6 +18,7 @@ $finder = new Finder();
 $inserter = new Inserter();
 $start_memory = memory_get_usage();
 $rootNode = new Node(Node::ROOT_LABEL);
+$compressor = new Compressor();
 
 $insertStart = microtime(true);
 foreach ($words as $word) {
@@ -52,23 +54,30 @@ echo sprintf(
 )."\n";
 
 $serializeStart = microtime(true);
-$trieData = serialize($rootNode);
-// @todo create serializer
-$trieData = str_replace('achertovsky\RadixTrie\Entity\Node', '!=:=!', $trieData);
+$compressedData = $compressor->compress($rootNode);
 $serializeEnd = microtime(true);
 
+
 $deserializeStart = microtime(true);
-$trieData = str_replace('!=:=!', 'achertovsky\RadixTrie\Entity\Node', $trieData);
-unserialize($trieData);
+$compressor->uncompress($compressedData);
 $deserializeEnd = microtime(true);
+
+$addSingleStart = microtime(true);
+$inserter->insert(
+    $rootNode,
+    'mombuwap'
+);
+$addSingleEnd = microtime(true);
 
 echo sprintf(
     "Insert takes %s (s.ms)\nSearch all words takes %s (s.ms)\nSearch single word takes %s (s.ms)\n"
-    . "Serialize %s (s.ms)\n"
-    . "Deserialize %s (s.ms)\n",
+    . "Compression %s (s.ms)\n"
+    . "Decompression %s (s.ms)\n"
+    . "Insert single word takes %s (s.ms)\n",
     sprintf("%.020f", $insertEnd - $insertStart),
     sprintf("%.020f", $findAllEnd - $findAllStart),
     sprintf("%.020f", $findOneWordAllEnd - $findOneWordAllStart),
     sprintf("%.020f", $serializeEnd - $serializeStart),
     sprintf("%.020f", $deserializeEnd - $deserializeStart),
+    sprintf("%.020f", $addSingleEnd - $addSingleStart),
 )."\n";
