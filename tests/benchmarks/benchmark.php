@@ -53,9 +53,12 @@ echo sprintf(
 
 $serializeStart = microtime(true);
 $trieData = serialize($rootNode);
+// @todo create serializer
+$trieData = str_replace('achertovsky\RadixTrie\Entity\Node', '!=:=!', $trieData);
 $serializeEnd = microtime(true);
 
 $deserializeStart = microtime(true);
+$trieData = str_replace('!=:=!', 'achertovsky\RadixTrie\Entity\Node', $trieData);
 unserialize($trieData);
 $deserializeEnd = microtime(true);
 

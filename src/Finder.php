@@ -45,14 +45,19 @@ class Finder
         Node $node,
         string $query
     ): array {
-        if ($node->isLeaf()) {
-            return [$node->getLabel()];
-        }
-
         $output = [];
-        foreach ($node->getEdges() as $edge) {
+        if (
+            $node->isValue()
+            && strpos(
+                $node->getLabel(),
+                $query
+            ) === 0
+        ) {
+            $output[] = $node->getLabel();
+        }
+        foreach ($node->getEdges() as $edge => $targetNode) {
             if (strpos(
-                $edge->getTargetNode()->getLabel(),
+                $targetNode->getLabel(),
                 $query
             ) !== 0) {
                 continue;
@@ -61,7 +66,7 @@ class Finder
             $output = array_merge(
                 $output,
                 $this->getLeafValuesByQuery(
-                    $edge->getTargetNode(),
+                    $targetNode,
                     $query
                 )
             );

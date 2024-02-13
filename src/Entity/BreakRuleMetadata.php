@@ -7,12 +7,12 @@ namespace achertovsky\RadixTrie\Entity;
 class BreakRuleMetadata
 {
     public function __construct(
-        private readonly Edge $edge,
+        private readonly string $edge,
         private readonly int $length
     ) {
     }
 
-    public function getEdge(): Edge
+    public function getEdge(): string
     {
         return $this->edge;
     }

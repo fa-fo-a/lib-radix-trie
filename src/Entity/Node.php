@@ -4,21 +4,22 @@ declare(strict_types=1);
 
 namespace achertovsky\RadixTrie\Entity;
 
-use achertovsky\RadixTrie\Entity\Edge;
-
 class Node
 {
     public const ROOT_LABEL = '';
 
-    /**
-     * @var Edge[]
-     */
     private array $edges;
 
     public function __construct(
-        private string $label
+        private string $label,
+        private bool $value = false
     ) {
         $this->edges = [];
+    }
+
+    public function getData()
+    {
+        return $this->data;
     }
 
     public function getLabel(): string
@@ -26,16 +27,13 @@ class Node
         return $this->label;
     }
 
-    public function addEdge(Edge $edge): self
+    public function addLeaf(string $label, Node $node): self
     {
-        $this->edges[] = $edge;
+        $this->edges[$label] = $node;
 
         return $this;
     }
 
-    /**
-     * @return Edge[]
-     */
     public function getEdges(): array
     {
         return $this->edges;
@@ -46,24 +44,20 @@ class Node
         return $this->edges === [];
     }
 
-    public function removeEdge(Edge $edge): void
+    public function isValue(): bool
     {
-        $key = array_search($edge, $this->edges);
-        if ($key === false) {
-            return;
-        }
-        unset($this->edges[$key]);
-        $this->edges = array_values($this->edges);
+        return $this->value;
     }
 
-    public function getEdgeToLeaf(): ?Edge
+    public function setValue(bool $value): self
     {
-        foreach ($this->getEdges() as $edge) {
-            if (strlen($edge->getLabel()) === 0) {
-                return $edge;
-            }
-        }
+        $this->value = $value;
 
-        return null;
+        return $this;
+    }
+
+    public function removeEdge(string $label): void
+    {
+        unset($this->edges[$label]);
     }
 }

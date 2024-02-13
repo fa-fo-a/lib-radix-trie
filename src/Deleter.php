@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace achertovsky\RadixTrie;
 
-use achertovsky\RadixTrie\Entity\Edge;
 use achertovsky\RadixTrie\Entity\Node;
 
 class Deleter
@@ -28,9 +27,12 @@ class Deleter
         );
 
         $edgeThatTargetsWord = null;
-        foreach ($closestNode->getEdges() as $edge) {
-            if (
-                $edge->getTargetNode()->getLabel() === $word
+        $edges = $closestNode->getEdges();
+        foreach ($edges as $edge => $targetNode) {
+            if (strpos(
+                    $word,
+                    $targetNode->getLabel()
+                ) === 0
             ) {
                 $edgeThatTargetsWord = $edge;
                 break;
@@ -42,19 +44,19 @@ class Deleter
 
         $nodeToWorkOn = null;
         $edgeToRemove = null;
-        if ($edgeThatTargetsWord->getTargetNode()->isLeaf()) {
-            $nodeToWorkOn = $closestNode;
-            $edgeToRemove = $edgeThatTargetsWord;
-        } elseif ($edgeThatTargetsWord->getTargetNode()->getEdgeToLeaf()) {
-            $nodeToWorkOn = $edgeThatTargetsWord->getTargetNode();
-            $edgeToRemove = $edgeThatTargetsWord->getTargetNode()->getEdgeToLeaf();
+        if ($edges[$edgeThatTargetsWord]->isValue()) {
+            if ($edges[$edgeThatTargetsWord]->isLeaf()) {
+                $closestNode->removeEdge($edgeThatTargetsWord);
+                $nodeToWorkOn = $closestNode;
+            } else {
+                $edges[$edgeThatTargetsWord]->setValue(false);
+                $nodeToWorkOn = $edges[$edgeThatTargetsWord];
+            }
         }
 
         if ($nodeToWorkOn === null) {
             return;
         }
-
-        $nodeToWorkOn->removeEdge($edgeToRemove);
 
         $this->collapseRedundantNode(
             $rootNode,
@@ -83,13 +85,18 @@ class Deleter
     ): void {
         if (
             $possiblyRedundantNode === $rootNode
-            || count($possiblyRedundantNode->getEdges()) > 1
+            || $possiblyRedundantNode->isValue()
         ) {
             return;
         }
 
+
         $edges = $possiblyRedundantNode->getEdges();
-        $leftoverNode = reset($edges)->getTargetNode();
+        if (count($edges) > 1) {
+            return;
+        }
+        $leftoverEdge = key($edges);
+        $leftoverNode = $edges[$leftoverEdge];
         $redundantNodeParent = $this->findParentForNodePossiblyContainingWord(
             $rootNode,
             $possiblyRedundantNode->getLabel()
@@ -110,8 +117,8 @@ class Deleter
         Node $redundantNodeParent,
         Node $redundantNode
     ): void {
-        foreach ($redundantNodeParent->getEdges() as $edge) {
-            if ($edge->getTargetNode() === $redundantNode) {
+        foreach ($redundantNodeParent->getEdges() as $edge => $targetNode) {
+            if ($targetNode === $redundantNode) {
                 $redundantNodeParent->removeEdge($edge);
                 break;
             }
@@ -122,14 +129,12 @@ class Deleter
         Node $redundantNodeParent,
         Node $leftoverNode
     ): void {
-        $redundantNodeParent->addEdge(
-            new Edge(
-                $this->stringHelper->getSuffix(
-                    $redundantNodeParent->getLabel(),
-                    $leftoverNode->getLabel()
-                ),
-                $leftoverNode
-            )
+        $redundantNodeParent->addLeaf(
+            $this->stringHelper->getSuffix(
+                $redundantNodeParent->getLabel(),
+                $leftoverNode->getLabel()
+            ),
+            $leftoverNode
         );
     }
 }

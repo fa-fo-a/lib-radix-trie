@@ -31,11 +31,7 @@ class BaseTestCase extends TestCase
         string $edgeLabel
     ): Node {
         $targetNode = new Node($targetNodeLabel);
-        $edge = new Edge(
-            $edgeLabel,
-            $targetNode
-        );
-        $sourceNode->addEdge($edge);
+        $sourceNode->addLeaf($edgeLabel, $targetNode);
 
         return $targetNode;
     }
@@ -48,15 +44,13 @@ class BaseTestCase extends TestCase
             $expectedNode->getLabel(),
             $actualNode->getLabel()
         );
+        $this->assertEquals(
+            $expectedNode->isValue(),
+            $actualNode->isValue()
+        );
 
-        $expectedEdges = [];
-        foreach ($expectedNode->getEdges() as $edge) {
-            $expectedEdges[$edge->getLabel()] = $edge;
-        }
-        $actualEdges = [];
-        foreach ($actualNode->getEdges() as $edge) {
-            $actualEdges[$edge->getLabel()] = $edge;
-        }
+        $expectedEdges = $expectedNode->getEdges();
+        $actualEdges = $actualNode->getEdges();
 
         ksort($expectedEdges);
         ksort($actualEdges);
@@ -67,8 +61,8 @@ class BaseTestCase extends TestCase
 
         foreach (array_keys($expectedEdges) as $edgeKey) {
             $this->assertNodeRecursivelyEqual(
-                $expectedEdges[$edgeKey]->getTargetNode(),
-                $actualEdges[$edgeKey]->getTargetNode()
+                $expectedEdges[$edgeKey],
+                $actualEdges[$edgeKey]
             );
         }
     }
