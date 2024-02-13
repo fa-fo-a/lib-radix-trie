@@ -8,13 +8,10 @@ use achertovsky\RadixTrie\Entity\Node;
 
 class Deleter
 {
-    private NodeSearcher $nodeSearcher;
-    private StringHelper $stringHelper;
-
-    public function __construct()
-    {
-        $this->nodeSearcher = new NodeSearcher();
-        $this->stringHelper = new StringHelper();
+    public function __construct(
+        private NodeSearcher $nodeSearcher = new NodeSearcher(),
+        private StringHelper $stringHelper = new StringHelper()
+    ) {
     }
 
     public function delete(

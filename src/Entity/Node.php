@@ -8,18 +8,11 @@ class Node
 {
     public const ROOT_LABEL = '';
 
-    private array $edges;
-
     public function __construct(
-        private string $label,
-        private bool $value = false
+        protected string $label,
+        protected bool $value = false,
+        protected array $edges = []
     ) {
-        $this->edges = [];
-    }
-
-    public function getData()
-    {
-        return $this->data;
     }
 
     public function getLabel(): string
@@ -49,7 +42,7 @@ class Node
         return $this->value;
     }
 
-    public function setValue(bool $value): self
+    public function setIsValue(bool $value): self
     {
         $this->value = $value;
 
