@@ -35,7 +35,7 @@ class Inserter
         }
         if (!$isValue && $isSameWord) {
             if (strlen($word) > 0) {
-                $closestNode->setValue(true);
+                $closestNode->setIsValue(true);
             }
 
             return;
@@ -80,7 +80,7 @@ class Inserter
         string $targetNodeLabel
     ): void {
         if ($sourceNode->getLabel() === $targetNodeLabel) {
-            $sourceNode->setValue(true);
+            $sourceNode->setIsValue(true);
 
             return;
         }

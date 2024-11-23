@@ -45,7 +45,7 @@ class Deleter
                 $closestNode->removeEdge($edgeThatTargetsWord);
                 $nodeToWorkOn = $closestNode;
             } else {
-                $edges[$edgeThatTargetsWord]->setValue(false);
+                $edges[$edgeThatTargetsWord]->setIsValue(false);
                 $nodeToWorkOn = $edges[$edgeThatTargetsWord];
             }
         }
