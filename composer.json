@@ -17,9 +17,9 @@
             "fafoa\\RadixTrie\\Tests\\": "tests/"
         }
     },
-    "licence": [
+    "license": [
         "MIT"
     ],
     "type": "library",
-    "version": "1.0.2"
+    "version": "1.0.3"
 }
