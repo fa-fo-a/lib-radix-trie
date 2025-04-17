@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace achertovsky\RadixTrie;
+namespace fafoa\RadixTrie;
 
-use achertovsky\RadixTrie\Entity\Node;
+use fafoa\RadixTrie\Entity\Node;
 
 class Deleter
 {

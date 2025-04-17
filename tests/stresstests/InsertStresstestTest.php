@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace achertovsky\RadixTrie\Tests\Stresstest;
+namespace fafoa\RadixTrie\Tests\Stresstest;
 
-use achertovsky\RadixTrie\Finder;
-use achertovsky\RadixTrie\Inserter;
-use achertovsky\RadixTrie\Entity\Node;
-use achertovsky\RadixTrie\Tests\BaseTestCase;
+use fafoa\RadixTrie\Finder;
+use fafoa\RadixTrie\Inserter;
+use fafoa\RadixTrie\Entity\Node;
+use fafoa\RadixTrie\Tests\BaseTestCase;
 
 class InsertStresstestTest extends BaseTestCase
 {

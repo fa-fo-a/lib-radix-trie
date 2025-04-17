@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace achertovsky\RadixTrie;
+namespace fafoa\RadixTrie;
 
-use achertovsky\RadixTrie\Entity\Node;
-use achertovsky\RadixTrie\Entity\BreakRuleMetadata;
+use fafoa\RadixTrie\Entity\Node;
+use fafoa\RadixTrie\Entity\BreakRuleMetadata;
 
 class Inserter
 {

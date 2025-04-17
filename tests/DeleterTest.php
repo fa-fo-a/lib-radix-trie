@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace achertovsky\RadixTrie\Tests;
+namespace fafoa\RadixTrie\Tests;
 
-use achertovsky\RadixTrie\Deleter;
-use achertovsky\RadixTrie\Entity\Node;
-use achertovsky\RadixTrie\Tests\BaseTestCase;
+use fafoa\RadixTrie\Deleter;
+use fafoa\RadixTrie\Entity\Node;
+use fafoa\RadixTrie\Tests\BaseTestCase;
 
 class DeleterTest extends BaseTestCase
 {

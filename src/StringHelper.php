@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace achertovsky\RadixTrie;
+namespace fafoa\RadixTrie;
 
 class StringHelper
 {

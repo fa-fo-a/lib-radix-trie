@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 include __DIR__ . '/../../vendor/autoload.php';
 
-use achertovsky\RadixTrie\Finder;
-use achertovsky\RadixTrie\Inserter;
-use achertovsky\RadixTrie\Compressor;
-use achertovsky\RadixTrie\Entity\Node;
+use fafoa\RadixTrie\Finder;
+use fafoa\RadixTrie\Inserter;
+use fafoa\RadixTrie\Compressor;
+use fafoa\RadixTrie\Entity\Node;
 
 $words = unserialize(
     file_get_contents(

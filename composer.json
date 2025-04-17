@@ -1,5 +1,5 @@
 {
-    "name": "achertovsky/lib-radix-trie",
+    "name": "fa-fo-a/lib-radix-trie",
     "description": "Radix trie POPO library",
     "require": {
         "php": "^8.2"
@@ -9,12 +9,12 @@
     },
     "autoload": {
         "psr-4": {
-            "achertovsky\\RadixTrie\\": "src/"
+            "fafoa\\RadixTrie\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "achertovsky\\RadixTrie\\Tests\\": "tests/"
+            "fafoa\\RadixTrie\\Tests\\": "tests/"
         }
     },
     "licence": "MIT",

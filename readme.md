@@ -1,5 +1,8 @@
-# User
+# General
 Lib called to provide https://en.wikipedia.org/wiki/Radix_tree impelementation for php
+
+## installation
+`composer require fa-fo-a/lib-radix-trie`
 
 ## usage
 To check usage cases, please, refer to `tests/InserterTest.php`, `tests/FinderTest.php`, `tests/DeleterTest.php`, `tests/CompressorTest.php`.

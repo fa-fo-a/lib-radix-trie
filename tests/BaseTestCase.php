@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace achertovsky\RadixTrie\Tests;
+namespace fafoa\RadixTrie\Tests;
 
 use PHPUnit\Framework\TestCase;
-use achertovsky\RadixTrie\Entity\Edge;
-use achertovsky\RadixTrie\Entity\Node;
+use fafoa\RadixTrie\Entity\Edge;
+use fafoa\RadixTrie\Entity\Node;
 
 class BaseTestCase extends TestCase
 {
